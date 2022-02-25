@@ -1,4 +1,5 @@
 import pygame
+import random
 import json
 
 
@@ -14,6 +15,9 @@ with open("settings.json","r") as fobj:
     content = json.load(fobj)
     NUMBER_OF_PLAYERS = content["number_of_players"]
     NUMBER_OF_DECKS = content["number_of_decks"]
+BACK_CARD = pygame.image.load("back.png")
+BACK_CARD = BACK_CARD.convert()
+BACK_CARD = pygame.transform.scale(BACK_CARD,(50*2,75*2))
 
 
 
@@ -29,11 +33,9 @@ def build_deck() -> list:
         for k in pic_cards:
             deck.append(i + "_" + k + ".png")
     
-    deck.append("back.png")
     return sorted(deck)
 
 def show_deck() -> None:
-    DECK = build_deck()
     x, y = 0, 0
 
     for i in DECK:
@@ -43,21 +45,45 @@ def show_deck() -> None:
         WIN.blit(img,(x,y))
         x+=20
 
+def build_players() -> None:
+    playerVar = dict.fromkeys(('player%d'%i for i in range(NUMBER_OF_PLAYERS)),None)
+    cardsPerPlayer = 52//len(playerVar.keys())
+    random.shuffle(DECK)
+    cardSample = DECK.copy()
+
+    for k,v in playerVar.items():
+        if v == None:
+            count = 0
+            playerList = []
+            while count < cardsPerPlayer:
+                playerList.append(cardSample.pop(0))
+                count += 1
+            playerVar[k] = playerList
+    playerVar["pot"] = cardSample
+    
+    with open("card_sample.json","w") as fobj:
+        json.dump(playerVar,fobj,indent=6)
+    
 
 
 def main() -> None:
     clock = pygame.time.Clock()
-    run = True    
+    run = True   
+    global DECK 
     DECK = build_deck()
+    show_deck()
+    build_players()
     
     while run:
+
         clock.tick(FPS)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
             WIN.fill(BLACK)
-            show_deck()
+
         pygame.display.update()
 
     pygame.quit()

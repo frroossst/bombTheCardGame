@@ -1,0 +1,68 @@
+{
+      "player0": [
+            "diamond_king.png",
+            "diamond_queen.png",
+            "club_king.png",
+            "spade_3.png",
+            "heart_2.png",
+            "heart_8.png",
+            "club_7.png",
+            "heart_king.png"
+      ],
+      "player1": [
+            "diamond_4.png",
+            "diamond_3.png",
+            "diamond_jack.png",
+            "spade_8.png",
+            "diamond_1.png",
+            "club_2.png",
+            "spade_7.png",
+            "diamond_8.png"
+      ],
+      "player2": [
+            "spade_4.png",
+            "diamond_10.png",
+            "club_1.png",
+            "club_5.png",
+            "club_jack.png",
+            "club_3.png",
+            "club_8.png",
+            "heart_queen.png"
+      ],
+      "player3": [
+            "diamond_5.png",
+            "diamond_2.png",
+            "club_10.png",
+            "spade_jack.png",
+            "club_queen.png",
+            "heart_5.png",
+            "spade_9.png",
+            "heart_10.png"
+      ],
+      "player4": [
+            "spade_10.png",
+            "heart_9.png",
+            "diamond_9.png",
+            "club_6.png",
+            "heart_4.png",
+            "diamond_7.png",
+            "heart_6.png",
+            "spade_5.png"
+      ],
+      "player5": [
+            "spade_6.png",
+            "heart_1.png",
+            "spade_king.png",
+            "heart_jack.png",
+            "spade_1.png",
+            "club_4.png",
+            "heart_3.png",
+            "spade_2.png"
+      ],
+      "pot": [
+            "club_9.png",
+            "heart_7.png",
+            "spade_queen.png",
+            "diamond_6.png"
+      ]
+}
