@@ -1,0 +1,7 @@
+Run `ip a s` in the terminal and grab the first IP
+python3 -m http.server 8080 to start a server
+
+# TODO 
+socketserver library to send and receive files over the LAN
+https://stackabuse.com/serving-files-with-pythons-simplehttpserver-module/
+https://docs.python.org/3/library/socketserver.html

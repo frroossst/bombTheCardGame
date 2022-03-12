@@ -1,3 +1,4 @@
+from lib2to3.pgen2.token import NUMBER
 import pygame
 import random
 import json
@@ -5,6 +6,7 @@ import json
 
 
 WIDTH, HEIGHT = 1080, 720
+CARD_WIDTH, CARD_HEIGHT = 50*2, 75*2
 WIN = pygame.display.set_mode((WIDTH,HEIGHT))
 BLACK = (0,0,0)
 WHITE = (255,255,255)
@@ -15,9 +17,10 @@ with open("settings.json","r") as fobj:
     content = json.load(fobj)
     NUMBER_OF_PLAYERS = content["number_of_players"]
     NUMBER_OF_DECKS = content["number_of_decks"]
+DECK_LEN = 52 * NUMBER_OF_DECKS
 BACK_CARD = pygame.image.load("back.png")
 BACK_CARD = BACK_CARD.convert()
-BACK_CARD = pygame.transform.scale(BACK_CARD,(50*2,75*2))
+BACK_CARD = pygame.transform.scale(BACK_CARD,(CARD_WIDTH,CARD_HEIGHT))
 
 
 
@@ -41,13 +44,13 @@ def show_deck() -> None:
     for i in DECK:
         img = pygame.image.load(i)
         img.convert()
-        img = pygame.transform.scale(img,(50*2,75*2))
+        img = pygame.transform.scale(img,(CARD_WIDTH,CARD_HEIGHT))
         WIN.blit(img,(x,y))
         x+=20
 
 def build_players() -> None:
     playerVar = dict.fromkeys(('player%d'%i for i in range(NUMBER_OF_PLAYERS)),None)
-    cardsPerPlayer = 52//len(playerVar.keys())
+    cardsPerPlayer = DECK_LEN//len(playerVar.keys())
     random.shuffle(DECK)
     cardSample = DECK.copy()
 
@@ -71,7 +74,6 @@ def main() -> None:
     run = True   
     global DECK 
     DECK = build_deck()
-    show_deck()
     build_players()
     
     while run:
@@ -83,7 +85,8 @@ def main() -> None:
                 run = False
 
             WIN.fill(BLACK)
-
+        
+        show_deck()
         pygame.display.update()
 
     pygame.quit()
