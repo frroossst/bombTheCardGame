@@ -23,8 +23,18 @@ class test(Resource):
     def post(self):
         return {"message" : "posted to API"}
 
+class game(Resource):
+
+    def post(self,owner,id):
+        passcode = random.randint(100000,999999)
+
+        return {"passcode" : passcode}
+
+
+
 
 api.add_resource(test,"/api")
+api.add_resource(game,"/api/game/create/<string:owner>/<string:id>"
 
 
 
