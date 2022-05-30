@@ -26,7 +26,31 @@ class test(Resource):
 class game(Resource):
 
     def post(self,owner,id):
-        passcode = random.randint(100000,999999)
+
+        validated_passcode = False
+
+        while not validated_passcode:
+
+            passcode = random.randint(100000,999999)
+
+            DATABASE_URL = os.environ.get("DATABASE_URL")
+
+            conn = psycopg2.connect(
+                 DATABASE_URL,sslmode="require"
+             )
+
+            curr = conn.cursor()
+
+            query = f"select passcode from game_master;"
+
+            curr.execute(query)
+
+            result = curr.fetchall()
+
+            print(result)
+
+            conn.close()
+
 
         return {"passcode" : passcode}
 
@@ -34,7 +58,7 @@ class game(Resource):
 
 
 api.add_resource(test,"/api")
-api.add_resource(game,"/api/game/create/<string:owner>/<string:id>"
+api.add_resource(game,"/api/game/create/<string:owner>/<string:id>")
 
 
 
