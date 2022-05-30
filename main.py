@@ -53,7 +53,10 @@ class game(Resource):
                     if i == passcode:
                         continue
             else:
+                q_create = f"create table {id} (p_id varchar(10), deck varchar(500), turn_count integer);"
+                curr.execute(q_create)
                 conn.close()
+
                 return {"passcode" : passcode}
 
 
