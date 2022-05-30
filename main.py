@@ -50,6 +50,8 @@ class game(Resource):
 
             print(result)
 
+            break
+
             conn.close()
 
 
