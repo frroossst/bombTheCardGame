@@ -48,14 +48,13 @@ class game(Resource):
 
             result = curr.fetchall()
 
-            print(result)
-
-            break
-
-            conn.close()
-
-
-        return {"passcode" : passcode}
+            for i in result:
+                for j in i:
+                    if i == passcode:
+                        continue
+            else:
+                conn.close()
+                return {"passcode" : passcode}
 
 
 
