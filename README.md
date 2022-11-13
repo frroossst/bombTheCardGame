@@ -3,8 +3,8 @@
 ## Tech Stack
 
 ### Frontend
-- Astro.js
-- React.js 
+- Vue.js 
+
 ###
 - Rocket.rs
 
