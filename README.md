@@ -1,3 +1,12 @@
+## Introduction
+
+## Tech Stack
+
+### Frontend
+- Astro.js
+- React.js 
+###
+- Rocket.rs
 
 ## Contributions and Credits
 <ul>
