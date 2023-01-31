@@ -3,10 +3,8 @@
 ## Tech Stack
 
 ### Frontend
-- Vue.js 
 
 ###
-- Rocket.rs
 
 ## Contributions and Credits
 <ul>
