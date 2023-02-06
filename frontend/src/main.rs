@@ -1,9 +1,6 @@
 use gloo_console::log;
 use yew::prelude::*;
 
-struct Model {
-    value: i64,
-}
 
 struct CardDeck {
     cards: Vec<Card>,
@@ -59,6 +56,18 @@ struct Card {
     img_src: String,
 }
 
+impl Card {
+    fn get_html(&self) -> Html {
+        html! {
+            <div class="card">
+            <div class="card__content">
+            <img src={self.img_src.clone()} />
+            </div>
+            </div>
+        }
+    }
+}
+
 enum Suite {
     Spades,
     Hearts,
@@ -69,46 +78,29 @@ enum Suite {
 
 #[function_component(App)]
 fn app() -> Html {
-    let state = use_state(|| Model { 
-        value: 0 
-    });
+
+    let deckofcards = CardDeck::new();
+    log!(deckofcards.cards.len());
 
     let onclick = {
-        let state = state.clone();
-
         let object = "hello world!";
         log!(object);
 
-        Callback::from(move |_| {
-            state.set(Model {
-                value: state.value + 1 
-            })
-        })
     };
+
+    let all_cards = deckofcards.cards.iter().map(|card| card.get_html()).collect::<Html>();
 
     html! {
         <div>
             <br/><br/><br/>
 
             <center>
-            <button {onclick}>{"Click me!"}</button>
 
             <br/><br/>
             <br/><br/>
 
-            <div class="card">
-            <div class="card__content">
-            <img src="https://raw.githubusercontent.com/frroossst/bombTheCardGame/master/assets/back-0062ff.png" alt="Yew logo" />
-            </div>
-            </div>
+            { all_cards }
 
-            <br/><br/><br/>
-
-            <div class="card">
-            <div class="card__content">
-            <img src="https://raw.githubusercontent.com/frroossst/bombTheCardGame/master/assets/diamond_1.png" alt="Yew logo" />
-            </div>
-            </div>
 
             </center>
         </div>

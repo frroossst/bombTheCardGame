@@ -1,1 +1,1 @@
-/home/home/Desktop/Projects/Bomb/frontend/target/wasm32-unknown-unknown/debug/frontend.wasm: /home/home/Desktop/Projects/Bomb/frontend/src/main.rs
+/home/home/Desktop/Projects/BombTheCardGame/frontend/target/wasm32-unknown-unknown/debug/frontend.wasm: /home/home/Desktop/Projects/BombTheCardGame/frontend/src/main.rs
