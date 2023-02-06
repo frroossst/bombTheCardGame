@@ -4,4 +4,7 @@ __pycache__
 /__pycache__
 /target
 target/*
-./frontend/dist
+*/target/*
+/frontend/dist
+./frontend/dist/*
+
