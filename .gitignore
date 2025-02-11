@@ -1,10 +1,4 @@
 .env
-.flaskenv
-__pycache__
-/__pycache__
-/target
-target/*
-*/target/*
-/frontend/dist
-./frontend/dist/*
+.zig-cache/
+.zig-out/
 
