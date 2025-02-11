@@ -1,31 +1,45 @@
 const std = @import("std");
 const zap = @import("zap");
+const router = @import("router.zig"); // Import the router module
 
 fn on_request_verbose(r: zap.Request) void {
-    if (r.path) |the_path| {
-        std.debug.print("PATH: {s}\n", .{the_path});
-    }
+    // Initialize the router
+    var routerInstance = router.Routes.init();
 
-    if (r.query) |the_query| {
-        std.debug.print("QUERY: {s}\n", .{the_query});
+    // Add routes
+    routerInstance.subscribe("/", on_request_minimal);
+    routerInstance.subscribe("/hello", on_request_hello);
+
+    switch (routerInstance.get_handler(r.path orelse "/")) {
+        .Found => |handler| {
+            handler(r);
+        },
+        .NotFound => {
+            // Return 404 in HTML
+            r.sendBody("<html><body><h1>404 Not Found</h1></body></html>") catch return;
+        },
     }
-    r.sendBody("<html><body><h1>Hello from ZAP!!!</h1></body></html>") catch return;
 }
 
 fn on_request_minimal(r: zap.Request) void {
     r.sendBody("<html><body><h1>Hello from ZAP!!!</h1></body></html>") catch return;
 }
 
+fn on_request_hello(r: zap.Request) void {
+    // returj html from /views/index.html
+    r.sendFile("views/index.html") catch return;
+}
+
 pub fn main() !void {
     var listener = zap.HttpListener.init(.{
-        .port = 3000,
+        .port = 6969,
         .on_request = on_request_verbose,
         .log = true,
         .max_clients = 100000,
     });
     try listener.listen();
 
-    std.debug.print("Listening on http://0.0.0.0:3000\n", .{});
+    std.debug.print("Listening on http://0.0.0.0:6969\n", .{});
 
     // start worker threads
     zap.start(.{
