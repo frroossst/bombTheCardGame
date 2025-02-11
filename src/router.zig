@@ -8,7 +8,6 @@ pub const HandlerResult = union(enum) {
 
 pub const Routes = struct {
     handlers: std.StringHashMap(zap.HttpRequestFn) = undefined,
-
     pub fn init() Routes {
         return Routes{
             .handlers = std.StringHashMap(zap.HttpRequestFn).init(std.heap.page_allocator),

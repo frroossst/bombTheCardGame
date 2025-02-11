@@ -8,7 +8,8 @@ fn on_request_verbose(r: zap.Request) void {
 
     // Add routes
     routerInstance.subscribe("/", on_request_minimal);
-    routerInstance.subscribe("/hello", on_request_hello);
+    routerInstance.subscribe("/play", on_request_hello);
+    routerInstance.subscribe("/join", on_request_hello);
 
     switch (routerInstance.get_handler(r.path orelse "/")) {
         .Found => |handler| {
