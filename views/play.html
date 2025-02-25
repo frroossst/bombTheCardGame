@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+</head>
+
+<script> 
+    // join a game
+    function joinGame() {
+        let gameId = document.getElementById("gameId").value;
+        window.location.href = `/join?gameId=${gameId}`;
+    }
+</script>
+
+<body>
+
+    <!-- 
+        Simple two buttons create and join 
+        redirects to /create and /join respectively
+    -->
+
+    <button onclick="window.location.href='/create'">Create</button>
+    <br>
+    <textarea id="gameId" placeholder="Enter Game ID"></textarea>
+    <button onclick="joinGame()">Join</button>
+
+</body>
+
