@@ -50,29 +50,29 @@
     "\n"
 ).
 
--opaque task(CLR) :: {task,
+-opaque task(IAJ) :: {task,
         gleam@erlang@process:pid_(),
         gleam@erlang@process:pid_(),
-        gleam@erlang@process:subject(CLR)}.
+        gleam@erlang@process:subject(IAJ)}.
 
 -type await_error() :: timeout | {exit, gleam@dynamic:dynamic_()}.
 
--type message2(CLS, CLT) :: {m2_from_subject1, CLS} |
-    {m2_from_subject2, CLT} |
+-type message2(IAK, IAL) :: {m2_from_subject1, IAK} |
+    {m2_from_subject2, IAL} |
     m2_timeout.
 
--type message3(CLU, CLV, CLW) :: {m3_from_subject1, CLU} |
-    {m3_from_subject2, CLV} |
-    {m3_from_subject3, CLW} |
+-type message3(IAM, IAN, IAO) :: {m3_from_subject1, IAM} |
+    {m3_from_subject2, IAN} |
+    {m3_from_subject3, IAO} |
     m3_timeout.
 
--type message4(CLX, CLY, CLZ, CMA) :: {m4_from_subject1, CLX} |
-    {m4_from_subject2, CLY} |
-    {m4_from_subject3, CLZ} |
-    {m4_from_subject4, CMA} |
+-type message4(IAP, IAQ, IAR, IAS) :: {m4_from_subject1, IAP} |
+    {m4_from_subject2, IAQ} |
+    {m4_from_subject3, IAR} |
+    {m4_from_subject4, IAS} |
     m4_timeout.
 
--type message(CMB) :: {message, integer(), CMB} | message_timeout.
+-type message(IAT) :: {message, integer(), IAT} | message_timeout.
 
 -file("src/gleam/otp/task.gleam", 55).
 ?DOC(
@@ -82,7 +82,7 @@
     "\n"
     " See the top level module documentation for more information on async/await.\n"
 ).
--spec async(fun(() -> CMC)) -> task(CMC).
+-spec async(fun(() -> IAU)) -> task(IAU).
 async(Work) ->
     Owner = erlang:self(),
     Subject = gleam@erlang@process:new_subject(),
@@ -114,7 +114,7 @@ assert_owner(Task) ->
     " If the a value is not received before the timeout has elapsed then an error\n"
     " is returned.\n"
 ).
--spec try_await(task(CMG), integer()) -> {ok, CMG} | {error, await_error()}.
+-spec try_await(task(IAY), integer()) -> {ok, IAY} | {error, await_error()}.
 try_await(Task, Timeout) ->
     assert_owner(Task),
     Selector = begin
@@ -140,7 +140,7 @@ try_await(Task, Timeout) ->
     " If the a value is not received before the timeout has elapsed or if the\n"
     " task process crashes then this function crashes.\n"
 ).
--spec await(task(CMK), integer()) -> CMK.
+-spec await(task(IBC), integer()) -> IBC.
 await(Task, Timeout) ->
     _assert_subject = try_await(Task, Timeout),
     {ok, Value} = case _assert_subject of
@@ -170,7 +170,7 @@ pid(Task) ->
     "\n"
     " If the task process crashes then this function crashes.\n"
 ).
--spec await_forever(task(CMO)) -> CMO.
+-spec await_forever(task(IBG)) -> IBG.
 await_forever(Task) ->
     assert_owner(Task),
     Selector = begin
@@ -185,11 +185,11 @@ await_forever(Task) ->
 
 -file("src/gleam/otp/task.gleam", 162).
 -spec try_await2_loop(
-    gleam@erlang@process:selector(message2(CMY, CMZ)),
-    gleam@option:option({ok, CMY} | {error, await_error()}),
-    gleam@option:option({ok, CMZ} | {error, await_error()}),
+    gleam@erlang@process:selector(message2(IBQ, IBR)),
+    gleam@option:option({ok, IBQ} | {error, await_error()}),
+    gleam@option:option({ok, IBR} | {error, await_error()}),
     gleam@erlang@process:timer()
-) -> {{ok, CMY} | {error, await_error()}, {ok, CMZ} | {error, await_error()}}.
+) -> {{ok, IBQ} | {error, await_error()}, {ok, IBR} | {error, await_error()}}.
 try_await2_loop(Selector, T1, T2, Timer) ->
     case {T1, T2} of
         {{some, T1@1}, {some, T2@1}} ->
@@ -219,9 +219,9 @@ try_await2_loop(Selector, T1, T2, Timer) ->
     " For each task, if the a value is not received before the timeout has\n"
     " elapsed then an error is returned.\n"
 ).
--spec try_await2(task(CMQ), task(CMS), integer()) -> {{ok, CMQ} |
+-spec try_await2(task(IBI), task(IBK), integer()) -> {{ok, IBI} |
         {error, await_error()},
-    {ok, CMS} | {error, await_error()}}.
+    {ok, IBK} | {error, await_error()}}.
 try_await2(Task1, Task2, Timeout) ->
     assert_owner(Task1),
     assert_owner(Task2),
@@ -251,14 +251,14 @@ try_await2(Task1, Task2, Timeout) ->
 
 -file("src/gleam/otp/task.gleam", 230).
 -spec try_await3_loop(
-    gleam@erlang@process:selector(message3(CNZ, COA, COB)),
-    gleam@option:option({ok, CNZ} | {error, await_error()}),
-    gleam@option:option({ok, COA} | {error, await_error()}),
-    gleam@option:option({ok, COB} | {error, await_error()}),
+    gleam@erlang@process:selector(message3(ICR, ICS, ICT)),
+    gleam@option:option({ok, ICR} | {error, await_error()}),
+    gleam@option:option({ok, ICS} | {error, await_error()}),
+    gleam@option:option({ok, ICT} | {error, await_error()}),
     gleam@erlang@process:timer()
-) -> {{ok, CNZ} | {error, await_error()},
-    {ok, COA} | {error, await_error()},
-    {ok, COB} | {error, await_error()}}.
+) -> {{ok, ICR} | {error, await_error()},
+    {ok, ICS} | {error, await_error()},
+    {ok, ICT} | {error, await_error()}}.
 try_await3_loop(Selector, T1, T2, T3, Timer) ->
     case {T1, T2, T3} of
         {{some, T1@1}, {some, T2@1}, {some, T3@1}} ->
@@ -293,10 +293,10 @@ try_await3_loop(Selector, T1, T2, T3, Timer) ->
     " For each task, if the a value is not received before the timeout has\n"
     " elapsed then an error is returned.\n"
 ).
--spec try_await3(task(CNN), task(CNP), task(CNR), integer()) -> {{ok, CNN} |
+-spec try_await3(task(ICF), task(ICH), task(ICJ), integer()) -> {{ok, ICF} |
         {error, await_error()},
-    {ok, CNP} | {error, await_error()},
-    {ok, CNR} | {error, await_error()}}.
+    {ok, ICH} | {error, await_error()},
+    {ok, ICJ} | {error, await_error()}}.
 try_await3(Task1, Task2, Task3, Timeout) ->
     assert_owner(Task1),
     assert_owner(Task2),
@@ -332,16 +332,16 @@ try_await3(Task1, Task2, Task3, Timeout) ->
 
 -file("src/gleam/otp/task.gleam", 312).
 -spec try_await4_loop(
-    gleam@erlang@process:selector(message4(CPL, CPM, CPN, CPO)),
-    gleam@option:option({ok, CPL} | {error, await_error()}),
-    gleam@option:option({ok, CPM} | {error, await_error()}),
-    gleam@option:option({ok, CPN} | {error, await_error()}),
-    gleam@option:option({ok, CPO} | {error, await_error()}),
+    gleam@erlang@process:selector(message4(IED, IEE, IEF, IEG)),
+    gleam@option:option({ok, IED} | {error, await_error()}),
+    gleam@option:option({ok, IEE} | {error, await_error()}),
+    gleam@option:option({ok, IEF} | {error, await_error()}),
+    gleam@option:option({ok, IEG} | {error, await_error()}),
     gleam@erlang@process:timer()
-) -> {{ok, CPL} | {error, await_error()},
-    {ok, CPM} | {error, await_error()},
-    {ok, CPN} | {error, await_error()},
-    {ok, CPO} | {error, await_error()}}.
+) -> {{ok, IED} | {error, await_error()},
+    {ok, IEE} | {error, await_error()},
+    {ok, IEF} | {error, await_error()},
+    {ok, IEG} | {error, await_error()}}.
 try_await4_loop(Selector, T1, T2, T3, T4, Timer) ->
     case {T1, T2, T3, T4} of
         {{some, T1@1}, {some, T2@1}, {some, T3@1}, {some, T4@1}} ->
@@ -381,12 +381,12 @@ try_await4_loop(Selector, T1, T2, T3, T4, Timer) ->
     " For each task, if the a value is not received before the timeout has\n"
     " elapsed then an error is returned.\n"
 ).
--spec try_await4(task(COV), task(COX), task(COZ), task(CPB), integer()) -> {{ok,
-            COV} |
+-spec try_await4(task(IDN), task(IDP), task(IDR), task(IDT), integer()) -> {{ok,
+            IDN} |
         {error, await_error()},
-    {ok, COX} | {error, await_error()},
-    {ok, COZ} | {error, await_error()},
-    {ok, CPB} | {error, await_error()}}.
+    {ok, IDP} | {error, await_error()},
+    {ok, IDR} | {error, await_error()},
+    {ok, IDT} | {error, await_error()}}.
 try_await4(Task1, Task2, Task3, Task4, Timeout) ->
     assert_owner(Task1),
     assert_owner(Task2),
@@ -427,11 +427,11 @@ try_await4(Task1, Task2, Task3, Task4, Timeout) ->
 
 -file("src/gleam/otp/task.gleam", 441).
 -spec dict_to_list_loop(
-    gleam@dict:dict(integer(), CRI),
-    CRI,
+    gleam@dict:dict(integer(), IGA),
+    IGA,
     integer(),
-    list(CRI)
-) -> list(CRI).
+    list(IGA)
+) -> list(IGA).
 dict_to_list_loop(Dict, Default, Index, List) ->
     case Index < 0 of
         true ->
@@ -461,17 +461,17 @@ dict_to_list_loop(Dict, Default, Index, List) ->
     " // -> [\" \", \"a\", \" \", \" \", \"b\"]\n"
     " ```\n"
 ).
--spec dict_to_list(gleam@dict:dict(integer(), CRE), integer(), CRE) -> list(CRE).
+-spec dict_to_list(gleam@dict:dict(integer(), IFW), integer(), IFW) -> list(IFW).
 dict_to_list(Dict, Sized, Default) ->
     dict_to_list_loop(Dict, Default, Sized - 1, []).
 
 -file("src/gleam/otp/task.gleam", 401).
 -spec try_await_all_loop(
-    gleam@dict:dict(integer(), {ok, CQU} | {error, await_error()}),
+    gleam@dict:dict(integer(), {ok, IFM} | {error, await_error()}),
     integer(),
     gleam@erlang@process:timer(),
-    gleam@erlang@process:selector(message(CQU))
-) -> list({ok, CQU} | {error, await_error()}).
+    gleam@erlang@process:selector(message(IFM))
+) -> list({ok, IFM} | {error, await_error()}).
 try_await_all_loop(Values, Tasks_count, Timer, Selector) ->
     case maps:size(Values) =:= Tasks_count of
         true ->
@@ -496,7 +496,7 @@ try_await_all_loop(Values, Tasks_count, Timer, Selector) ->
     " For each task, if the a value is not received before the timeout has\n"
     " elapsed then an error is returned.\n"
 ).
--spec try_await_all(list(task(CQO)), integer()) -> list({ok, CQO} |
+-spec try_await_all(list(task(IFG)), integer()) -> list({ok, IFG} |
     {error, await_error()}).
 try_await_all(Tasks, Timeout) ->
     {Selector@2, Tasks_count@1} = begin

@@ -23,12 +23,12 @@
         gleam@option:option(glisten@socket:socket()),
         glisten@transport:transport()}.
 
--type pool(FKM, FKN) :: {pool,
-        fun((glisten@internal@handler:loop_message(FKM), FKN, glisten@internal@handler:connection(FKM)) -> gleam@otp@actor:next(glisten@internal@handler:loop_message(FKM), FKN)),
+-type pool(LBN, LBO) :: {pool,
+        fun((glisten@internal@handler:loop_message(LBN), LBO, glisten@internal@handler:connection(LBN)) -> gleam@otp@actor:next(glisten@internal@handler:loop_message(LBN), LBO)),
         integer(),
-        fun((glisten@internal@handler:connection(FKM)) -> {FKN,
-            gleam@option:option(gleam@erlang@process:selector(FKM))}),
-        gleam@option:option(fun((FKN) -> nil)),
+        fun((glisten@internal@handler:connection(LBN)) -> {LBO,
+            gleam@option:option(gleam@erlang@process:selector(LBN))}),
+        gleam@option:option(fun((LBO) -> nil)),
         glisten@transport:transport()}.
 
 -file("src/glisten/internal/acceptor.gleam", 38).

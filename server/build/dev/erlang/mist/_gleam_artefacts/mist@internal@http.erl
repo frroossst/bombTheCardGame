@@ -141,7 +141,7 @@ version_to_string(Version) ->
 
 -file("src/mist/internal/http.gleam", 515).
 ?DOC(false).
--spec add_date_header(gleam@http@response:response(HCP)) -> gleam@http@response:response(HCP).
+-spec add_date_header(gleam@http@response:response(MTQ)) -> gleam@http@response:response(MTQ).
 add_date_header(Resp) ->
     case gleam@http@response:get_header(Resp, <<"date"/utf8>>) of
         {error, _} ->
@@ -157,7 +157,7 @@ add_date_header(Resp) ->
 
 -file("src/mist/internal/http.gleam", 522).
 ?DOC(false).
--spec connection_close(gleam@http@response:response(HCS)) -> gleam@http@response:response(HCS).
+-spec connection_close(gleam@http@response:response(MTT)) -> gleam@http@response:response(MTT).
 connection_close(Resp) ->
     gleam@http@response:set_header(
         Resp,
@@ -167,7 +167,7 @@ connection_close(Resp) ->
 
 -file("src/mist/internal/http.gleam", 526).
 ?DOC(false).
--spec keep_alive(gleam@http@response:response(HCV)) -> gleam@http@response:response(HCV).
+-spec keep_alive(gleam@http@response:response(MTW)) -> gleam@http@response:response(MTW).
 keep_alive(Resp) ->
     gleam@http@response:set_header(
         Resp,
@@ -177,7 +177,7 @@ keep_alive(Resp) ->
 
 -file("src/mist/internal/http.gleam", 530).
 ?DOC(false).
--spec maybe_keep_alive(gleam@http@response:response(HCY)) -> gleam@http@response:response(HCY).
+-spec maybe_keep_alive(gleam@http@response:response(MTZ)) -> gleam@http@response:response(MTZ).
 maybe_keep_alive(Resp) ->
     case gleam@http@response:get_header(Resp, <<"connection"/utf8>>) of
         {ok, _} ->
@@ -208,7 +208,7 @@ maybe_drop_body(Resp, Is_head_request) ->
 
 -file("src/mist/internal/http.gleam", 547).
 ?DOC(false).
--spec add_content_length(boolean(), integer()) -> fun((gleam@http@response:response(HDD)) -> gleam@http@response:response(HDD)).
+-spec add_content_length(boolean(), integer()) -> fun((gleam@http@response:response(MUE)) -> gleam@http@response:response(MUE)).
 add_content_length(When, Length) ->
     fun(Resp) -> case When of
             true ->

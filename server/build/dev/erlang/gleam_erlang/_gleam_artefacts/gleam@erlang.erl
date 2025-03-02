@@ -102,7 +102,7 @@ erlang_timestamp() ->
     " This function will catch any error thrown and convert it into a result\n"
     " rather than crashing the process.\n"
 ).
--spec rescue(fun(() -> EXF)) -> {ok, EXF} | {error, crash()}.
+-spec rescue(fun(() -> EZU)) -> {ok, EZU} | {error, crash()}.
 rescue(A) ->
     gleam_erlang_ffi:rescue(A).
 

@@ -14,8 +14,8 @@
 
 ?MODULEDOC(false).
 
--opaque stream_identifier(HYY) :: {stream_identifier, integer()} |
-    {gleam_phantom, HYY}.
+-opaque stream_identifier(NPZ) :: {stream_identifier, integer()} |
+    {gleam_phantom, NPZ}.
 
 -type header_priority() :: {header_priority,
         boolean(),

@@ -20,35 +20,35 @@
     ssl_closed |
     tcp_closed.
 
--type message(EXS) :: {internal, internal_message()} | {user, EXS}.
+-type message(KOT) :: {internal, internal_message()} | {user, KOT}.
 
--type loop_message(EXT) :: {packet, bitstring()} | {custom, EXT}.
+-type loop_message(KOU) :: {packet, bitstring()} | {custom, KOU}.
 
--type loop_state(EXU, EXV) :: {loop_state,
+-type loop_state(KOV, KOW) :: {loop_state,
         {ok, {glisten@socket@options:ip_address(), integer()}} | {error, nil},
         glisten@socket:socket(),
-        gleam@erlang@process:subject(message(EXU)),
+        gleam@erlang@process:subject(message(KOV)),
         glisten@transport:transport(),
-        EXV}.
+        KOW}.
 
--type connection(EXW) :: {connection,
+-type connection(KOX) :: {connection,
         {ok, {glisten@socket@options:ip_address(), integer()}} | {error, nil},
         glisten@socket:socket(),
         glisten@transport:transport(),
-        gleam@erlang@process:subject(message(EXW))}.
+        gleam@erlang@process:subject(message(KOX))}.
 
--type handler(EXX, EXY) :: {handler,
+-type handler(KOY, KOZ) :: {handler,
         glisten@socket:socket(),
-        fun((loop_message(EXX), EXY, connection(EXX)) -> gleam@otp@actor:next(loop_message(EXX), EXY)),
-        fun((connection(EXX)) -> {EXY,
-            gleam@option:option(gleam@erlang@process:selector(EXX))}),
-        gleam@option:option(fun((EXY) -> nil)),
+        fun((loop_message(KOY), KOZ, connection(KOY)) -> gleam@otp@actor:next(loop_message(KOY), KOZ)),
+        fun((connection(KOY)) -> {KOZ,
+            gleam@option:option(gleam@erlang@process:selector(KOY))}),
+        gleam@option:option(fun((KOZ) -> nil)),
         glisten@transport:transport()}.
 
 -file("src/glisten/internal/handler.gleam", 73).
 ?DOC(false).
--spec start(handler(EYI, any())) -> {ok,
-        gleam@erlang@process:subject(message(EYI))} |
+-spec start(handler(KPJ, any())) -> {ok,
+        gleam@erlang@process:subject(message(KPJ))} |
     {error, gleam@otp@actor:start_error()}.
 start(Handler) ->
     gleam@otp@actor:start_spec(

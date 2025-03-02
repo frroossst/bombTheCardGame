@@ -47,9 +47,9 @@
         mist@internal@buffer:buffer(),
         boolean()}.
 
--opaque builder(JMH, JMI) :: {builder,
+-opaque builder(PDI, PDJ) :: {builder,
         integer(),
-        fun((gleam@http@request:request(JMH)) -> gleam@http@response:response(JMI)),
+        fun((gleam@http@request:request(PDI)) -> gleam@http@response:response(PDJ)),
         fun((integer(), gleam@http:scheme(), ip_address()) -> nil),
         binary(),
         boolean()}.
@@ -66,11 +66,11 @@
 -type https_error() :: {glisten_error, glisten:start_error()} |
     {certificate_error, certificate_error()}.
 
--type websocket_message(JMJ) :: {text, binary()} |
+-type websocket_message(PDK) :: {text, binary()} |
     {binary, bitstring()} |
     closed |
     shutdown |
-    {custom, JMJ}.
+    {custom, PDK}.
 
 -opaque sse_connection() :: {sse_connection, mist@internal@http:connection()}.
 
@@ -469,8 +469,8 @@ stream(Req) ->
     " 4000.\n"
 ).
 -spec new(
-    fun((gleam@http@request:request(JNG)) -> gleam@http@response:response(JNI))
-) -> builder(JNG, JNI).
+    fun((gleam@http@request:request(PEH)) -> gleam@http@response:response(PEJ))
+) -> builder(PEH, PEJ).
 new(Handler) ->
     {builder,
         4000,
@@ -497,7 +497,7 @@ new(Handler) ->
 
 -file("src/mist.gleam", 380).
 ?DOC(" Assign a different listening port to the service.\n").
--spec port(builder(JNM, JNN), integer()) -> builder(JNM, JNN).
+-spec port(builder(PEN, PEO), integer()) -> builder(PEN, PEO).
 port(Builder, Port) ->
     _record = Builder,
     {builder,
@@ -514,10 +514,10 @@ port(Builder, Port) ->
     " `failure_response` will be sent back as the response.\n"
 ).
 -spec read_request_body(
-    builder(bitstring(), JNS),
+    builder(bitstring(), PET),
     integer(),
-    gleam@http@response:response(JNS)
-) -> builder(mist@internal@http:connection(), JNS).
+    gleam@http@response:response(PET)
+) -> builder(mist@internal@http:connection(), PET).
 read_request_body(Builder, Bytes_limit, Failure_response) ->
     Handler = fun(Request) -> case read_body(Request, Bytes_limit) of
             {ok, Request@1} ->
@@ -539,9 +539,9 @@ read_request_body(Builder, Bytes_limit, Failure_response) ->
     " default is to log a message with the listening port.\n"
 ).
 -spec after_start(
-    builder(JNY, JNZ),
+    builder(PEZ, PFA),
     fun((integer(), gleam@http:scheme(), ip_address()) -> nil)
-) -> builder(JNY, JNZ).
+) -> builder(PEZ, PFA).
 after_start(Builder, After_start) ->
     _record = Builder,
     {builder,
@@ -558,7 +558,7 @@ after_start(Builder, After_start) ->
     " a valid IPv6 address (i.e. \"::1\"). An invalid value will cause the\n"
     " application to crash.\n"
 ).
--spec bind(builder(JOE, JOF), binary()) -> builder(JOE, JOF).
+-spec bind(builder(PFF, PFG), binary()) -> builder(PFF, PFG).
 bind(Builder, Interface) ->
     _record = Builder,
     {builder,
@@ -576,7 +576,7 @@ bind(Builder, Interface) ->
     " not supported, your application will crash. If you provide an IPv6 address\n"
     " to `mist.bind`, this function will have no effect.\n"
 ).
--spec with_ipv6(builder(JOK, JOL)) -> builder(JOK, JOL).
+-spec with_ipv6(builder(PFL, PFM)) -> builder(PFL, PFM).
 with_ipv6(Builder) ->
     _record = Builder,
     {builder,
@@ -776,8 +776,8 @@ start_https(Builder, Certfile, Keyfile) ->
 
 -file("src/mist.gleam", 599).
 -spec internal_to_public_ws_message(
-    mist@internal@websocket:handler_message(JPL)
-) -> {ok, websocket_message(JPL)} | {error, nil}.
+    mist@internal@websocket:handler_message(PGM)
+) -> {ok, websocket_message(PGM)} | {error, nil}.
 internal_to_public_ws_message(Msg) ->
     case Msg of
         {internal, {data, {text_frame, _, Data}}} ->
@@ -810,10 +810,10 @@ internal_to_public_ws_message(Msg) ->
 ).
 -spec websocket(
     gleam@http@request:request(mist@internal@http:connection()),
-    fun((JPR, mist@internal@websocket:websocket_connection(), websocket_message(JPS)) -> gleam@otp@actor:next(JPS, JPR)),
-    fun((mist@internal@websocket:websocket_connection()) -> {JPR,
-        gleam@option:option(gleam@erlang@process:selector(JPS))}),
-    fun((JPR) -> nil)
+    fun((PGS, mist@internal@websocket:websocket_connection(), websocket_message(PGT)) -> gleam@otp@actor:next(PGT, PGS)),
+    fun((mist@internal@websocket:websocket_connection()) -> {PGS,
+        gleam@option:option(gleam@erlang@process:selector(PGT))}),
+    fun((PGS) -> nil)
 ) -> gleam@http@response:response(response_data()).
 websocket(Request, Handler, On_init, On_close) ->
     Handler@1 = fun(State, Connection, Message) -> _pipe = Message,
@@ -1001,8 +1001,8 @@ event_retry(Event, Retry) ->
 -spec server_sent_events(
     gleam@http@request:request(mist@internal@http:connection()),
     gleam@http@response:response(any()),
-    fun(() -> gleam@otp@actor:init_result(JQG, JQH)),
-    fun((JQH, sse_connection(), JQG) -> gleam@otp@actor:next(JQH, JQG))
+    fun(() -> gleam@otp@actor:init_result(PHH, PHI)),
+    fun((PHI, sse_connection(), PHH) -> gleam@otp@actor:next(PHI, PHH))
 ) -> gleam@http@response:response(response_data()).
 server_sent_events(Req, Resp, Init, Loop) ->
     With_default_headers = begin

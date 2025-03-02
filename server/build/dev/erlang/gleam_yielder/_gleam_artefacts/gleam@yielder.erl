@@ -12,21 +12,21 @@
 -define(DOC(Str), -compile([])).
 -endif.
 
--type action(DDN) :: stop | {continue, DDN, fun(() -> action(DDN))}.
+-type action(ISF) :: stop | {continue, ISF, fun(() -> action(ISF))}.
 
--opaque yielder(DDO) :: {yielder, fun(() -> action(DDO))}.
+-opaque yielder(ISG) :: {yielder, fun(() -> action(ISG))}.
 
--type step(DDP, DDQ) :: {next, DDP, DDQ} | done.
+-type step(ISH, ISI) :: {next, ISH, ISI} | done.
 
--type chunk(DDR, DDS) :: {another_by,
-        list(DDR),
-        DDS,
-        DDR,
-        fun(() -> action(DDR))} |
-    {last_by, list(DDR)}.
+-type chunk(ISJ, ISK) :: {another_by,
+        list(ISJ),
+        ISK,
+        ISJ,
+        fun(() -> action(ISJ))} |
+    {last_by, list(ISJ)}.
 
--type sized_chunk(DDT) :: {another, list(DDT), fun(() -> action(DDT))} |
-    {last, list(DDT)} |
+-type sized_chunk(ISL) :: {another, list(ISL), fun(() -> action(ISL))} |
+    {last, list(ISL)} |
     no_more.
 
 -file("src/gleam/yielder.gleam", 37).
@@ -35,7 +35,7 @@ stop() ->
     stop.
 
 -file("src/gleam/yielder.gleam", 72).
--spec unfold_loop(DEB, fun((DEB) -> step(DEC, DEB))) -> fun(() -> action(DEC)).
+-spec unfold_loop(IST, fun((IST) -> step(ISU, IST))) -> fun(() -> action(ISU)).
 unfold_loop(Initial, F) ->
     fun() -> case F(Initial) of
             {next, X, Acc} ->
@@ -68,7 +68,7 @@ unfold_loop(Initial, F) ->
     " // -> [5, 4, 3, 2, 1]\n"
     " ```\n"
 ).
--spec unfold(DDW, fun((DDW) -> step(DDX, DDW))) -> yielder(DDX).
+-spec unfold(ISO, fun((ISO) -> step(ISP, ISO))) -> yielder(ISP).
 unfold(Initial, F) ->
     _pipe = Initial,
     _pipe@1 = unfold_loop(_pipe, F),
@@ -86,7 +86,7 @@ unfold(Initial, F) ->
     " // -> [7, 7, 7]\n"
     " ```\n"
 ).
--spec repeatedly(fun(() -> DEG)) -> yielder(DEG).
+-spec repeatedly(fun(() -> ISY)) -> yielder(ISY).
 repeatedly(F) ->
     unfold(nil, fun(_) -> {next, F(), nil} end).
 
@@ -103,7 +103,7 @@ repeatedly(F) ->
     " // -> [10, 10, 10, 10]\n"
     " ```\n"
 ).
--spec repeat(DEI) -> yielder(DEI).
+-spec repeat(ITA) -> yielder(ITA).
 repeat(X) ->
     repeatedly(fun() -> X end).
 
@@ -119,7 +119,7 @@ repeat(X) ->
     " // -> [1, 2, 3, 4]\n"
     " ```\n"
 ).
--spec from_list(list(DEK)) -> yielder(DEK).
+-spec from_list(list(ITC)) -> yielder(ITC).
 from_list(List) ->
     Yield = fun(Acc) -> case Acc of
             [] ->
@@ -132,10 +132,10 @@ from_list(List) ->
 
 -file("src/gleam/yielder.gleam", 134).
 -spec transform_loop(
-    fun(() -> action(DEN)),
-    DEP,
-    fun((DEP, DEN) -> step(DEQ, DEP))
-) -> fun(() -> action(DEQ)).
+    fun(() -> action(ITF)),
+    ITH,
+    fun((ITH, ITF) -> step(ITI, ITH))
+) -> fun(() -> action(ITI)).
 transform_loop(Continuation, State, F) ->
     fun() -> case Continuation() of
             stop ->
@@ -170,13 +170,13 @@ transform_loop(Continuation, State, F) ->
     " // -> [#(0, \"a\"), #(1, \"b\"), #(2, \"c\")]\n"
     " ```\n"
 ).
--spec transform(yielder(DEU), DEW, fun((DEW, DEU) -> step(DEX, DEW))) -> yielder(DEX).
+-spec transform(yielder(ITM), ITO, fun((ITO, ITM) -> step(ITP, ITO))) -> yielder(ITP).
 transform(Yielder, Initial, F) ->
     _pipe = transform_loop(erlang:element(2, Yielder), Initial, F),
     {yielder, _pipe}.
 
 -file("src/gleam/yielder.gleam", 204).
--spec fold_loop(fun(() -> action(DFE)), fun((DFG, DFE) -> DFG), DFG) -> DFG.
+-spec fold_loop(fun(() -> action(ITW)), fun((ITY, ITW) -> ITY), ITY) -> ITY.
 fold_loop(Continuation, F, Accumulator) ->
     case Continuation() of
         {continue, Elem, Next} ->
@@ -205,7 +205,7 @@ fold_loop(Continuation, F, Accumulator) ->
     " // -> 10\n"
     " ```\n"
 ).
--spec fold(yielder(DFB), DFD, fun((DFD, DFB) -> DFD)) -> DFD.
+-spec fold(yielder(ITT), ITV, fun((ITV, ITT) -> ITV)) -> ITV.
 fold(Yielder, Initial, F) ->
     _pipe = erlang:element(2, Yielder),
     fold_loop(_pipe, F, Initial).
@@ -236,7 +236,7 @@ run(Yielder) ->
     " // -> [2, 4, 6]\n"
     " ```\n"
 ).
--spec to_list(yielder(DFJ)) -> list(DFJ).
+-spec to_list(yielder(IUB)) -> list(IUB).
 to_list(Yielder) ->
     _pipe = Yielder,
     _pipe@1 = fold(_pipe, [], fun(Acc, E) -> [E | Acc] end),
@@ -266,7 +266,7 @@ to_list(Yielder) ->
     " // -> Done\n"
     " ```\n"
 ).
--spec step(yielder(DFM)) -> step(DFM, yielder(DFM)).
+-spec step(yielder(IUE)) -> step(IUE, yielder(IUE)).
 step(Yielder) ->
     case (erlang:element(2, Yielder))() of
         stop ->
@@ -277,7 +277,7 @@ step(Yielder) ->
     end.
 
 -file("src/gleam/yielder.gleam", 299).
--spec take_loop(fun(() -> action(DFU)), integer()) -> fun(() -> action(DFU)).
+-spec take_loop(fun(() -> action(IUM)), integer()) -> fun(() -> action(IUM)).
 take_loop(Continuation, Desired) ->
     fun() -> case Desired > 0 of
             false ->
@@ -315,14 +315,14 @@ take_loop(Continuation, Desired) ->
     " // -> [1, 2]\n"
     " ```\n"
 ).
--spec take(yielder(DFR), integer()) -> yielder(DFR).
+-spec take(yielder(IUJ), integer()) -> yielder(IUJ).
 take(Yielder, Desired) ->
     _pipe = erlang:element(2, Yielder),
     _pipe@1 = take_loop(_pipe, Desired),
     {yielder, _pipe@1}.
 
 -file("src/gleam/yielder.gleam", 342).
--spec drop_loop(fun(() -> action(DGA)), integer()) -> action(DGA).
+-spec drop_loop(fun(() -> action(IUS)), integer()) -> action(IUS).
 drop_loop(Continuation, Desired) ->
     case Continuation() of
         stop ->
@@ -365,13 +365,13 @@ drop_loop(Continuation, Desired) ->
     " // -> []\n"
     " ```\n"
 ).
--spec drop(yielder(DFX), integer()) -> yielder(DFX).
+-spec drop(yielder(IUP), integer()) -> yielder(IUP).
 drop(Yielder, Desired) ->
     _pipe = fun() -> drop_loop(erlang:element(2, Yielder), Desired) end,
     {yielder, _pipe}.
 
 -file("src/gleam/yielder.gleam", 376).
--spec map_loop(fun(() -> action(DGH)), fun((DGH) -> DGJ)) -> fun(() -> action(DGJ)).
+-spec map_loop(fun(() -> action(IUZ)), fun((IUZ) -> IVB)) -> fun(() -> action(IVB)).
 map_loop(Continuation, F) ->
     fun() -> case Continuation() of
             stop ->
@@ -400,7 +400,7 @@ map_loop(Continuation, F) ->
     " // -> [2, 4, 6]\n"
     " ```\n"
 ).
--spec map(yielder(DGD), fun((DGD) -> DGF)) -> yielder(DGF).
+-spec map(yielder(IUV), fun((IUV) -> IUX)) -> yielder(IUX).
 map(Yielder, F) ->
     _pipe = erlang:element(2, Yielder),
     _pipe@1 = map_loop(_pipe, F),
@@ -408,10 +408,10 @@ map(Yielder, F) ->
 
 -file("src/gleam/yielder.gleam", 417).
 -spec map2_loop(
-    fun(() -> action(DGR)),
-    fun(() -> action(DGT)),
-    fun((DGR, DGT) -> DGV)
-) -> fun(() -> action(DGV)).
+    fun(() -> action(IVJ)),
+    fun(() -> action(IVL)),
+    fun((IVJ, IVL) -> IVN)
+) -> fun(() -> action(IVN)).
 map2_loop(Continuation1, Continuation2, Fun) ->
     fun() -> case Continuation1() of
             stop ->
@@ -452,7 +452,7 @@ map2_loop(Continuation1, Continuation2, Fun) ->
     " // -> [#(1, \"a\"), #(2, \"b\")]\n"
     " ```\n"
 ).
--spec map2(yielder(DGL), yielder(DGN), fun((DGL, DGN) -> DGP)) -> yielder(DGP).
+-spec map2(yielder(IVD), yielder(IVF), fun((IVD, IVF) -> IVH)) -> yielder(IVH).
 map2(Yielder1, Yielder2, Fun) ->
     _pipe = map2_loop(
         erlang:element(2, Yielder1),
@@ -462,7 +462,7 @@ map2(Yielder1, Yielder2, Fun) ->
     {yielder, _pipe}.
 
 -file("src/gleam/yielder.gleam", 454).
--spec append_loop(fun(() -> action(DHB)), fun(() -> action(DHB))) -> action(DHB).
+-spec append_loop(fun(() -> action(IVT)), fun(() -> action(IVT))) -> action(IVT).
 append_loop(First, Second) ->
     case First() of
         {continue, E, First@1} ->
@@ -488,7 +488,7 @@ append_loop(First, Second) ->
     " // -> [1, 2, 3, 4]\n"
     " ```\n"
 ).
--spec append(yielder(DGX), yielder(DGX)) -> yielder(DGX).
+-spec append(yielder(IVP), yielder(IVP)) -> yielder(IVP).
 append(First, Second) ->
     _pipe = fun() ->
         append_loop(erlang:element(2, First), erlang:element(2, Second))
@@ -496,7 +496,7 @@ append(First, Second) ->
     {yielder, _pipe}.
 
 -file("src/gleam/yielder.gleam", 481).
--spec flatten_loop(fun(() -> action(yielder(DHJ)))) -> action(DHJ).
+-spec flatten_loop(fun(() -> action(yielder(IWB)))) -> action(IWB).
 flatten_loop(Flattened) ->
     case Flattened() of
         stop ->
@@ -526,7 +526,7 @@ flatten_loop(Flattened) ->
     " // -> [1, 2, 3, 4]\n"
     " ```\n"
 ).
--spec flatten(yielder(yielder(DHF))) -> yielder(DHF).
+-spec flatten(yielder(yielder(IVX))) -> yielder(IVX).
 flatten(Yielder) ->
     _pipe = fun() -> flatten_loop(erlang:element(2, Yielder)) end,
     {yielder, _pipe}.
@@ -548,7 +548,7 @@ flatten(Yielder) ->
     " // -> [1, 2, 3, 4]\n"
     " ```\n"
 ).
--spec concat(list(yielder(DHN))) -> yielder(DHN).
+-spec concat(list(yielder(IWF))) -> yielder(IWF).
 concat(Yielders) ->
     flatten(from_list(Yielders)).
 
@@ -572,14 +572,14 @@ concat(Yielders) ->
     " // -> [1, 2, 2, 3]\n"
     " ```\n"
 ).
--spec flat_map(yielder(DHR), fun((DHR) -> yielder(DHT))) -> yielder(DHT).
+-spec flat_map(yielder(IWJ), fun((IWJ) -> yielder(IWL))) -> yielder(IWL).
 flat_map(Yielder, F) ->
     _pipe = Yielder,
     _pipe@1 = map(_pipe, F),
     flatten(_pipe@1).
 
 -file("src/gleam/yielder.gleam", 562).
--spec filter_loop(fun(() -> action(DHZ)), fun((DHZ) -> boolean())) -> action(DHZ).
+-spec filter_loop(fun(() -> action(IWR)), fun((IWR) -> boolean())) -> action(IWR).
 filter_loop(Continuation, Predicate) ->
     case Continuation() of
         stop ->
@@ -616,16 +616,16 @@ filter_loop(Continuation, Predicate) ->
     " // -> [2, 4]\n"
     " ```\n"
 ).
--spec filter(yielder(DHW), fun((DHW) -> boolean())) -> yielder(DHW).
+-spec filter(yielder(IWO), fun((IWO) -> boolean())) -> yielder(IWO).
 filter(Yielder, Predicate) ->
     _pipe = fun() -> filter_loop(erlang:element(2, Yielder), Predicate) end,
     {yielder, _pipe}.
 
 -file("src/gleam/yielder.gleam", 606).
 -spec filter_map_loop(
-    fun(() -> action(DIJ)),
-    fun((DIJ) -> {ok, DIL} | {error, any()})
-) -> action(DIL).
+    fun(() -> action(IXB)),
+    fun((IXB) -> {ok, IXD} | {error, any()})
+) -> action(IXD).
 filter_map_loop(Continuation, F) ->
     case Continuation() of
         stop ->
@@ -665,7 +665,7 @@ filter_map_loop(Continuation, F) ->
     " // -> [1, 2, 3, 4, 5]\n"
     " ```\n"
 ).
--spec filter_map(yielder(DIC), fun((DIC) -> {ok, DIE} | {error, any()})) -> yielder(DIE).
+-spec filter_map(yielder(IWU), fun((IWU) -> {ok, IWW} | {error, any()})) -> yielder(IWW).
 filter_map(Yielder, F) ->
     _pipe = fun() -> filter_map_loop(erlang:element(2, Yielder), F) end,
     {yielder, _pipe}.
@@ -684,13 +684,13 @@ filter_map(Yielder, F) ->
     " // -> [1, 2, 1, 2, 1, 2]\n"
     " ```\n"
 ).
--spec cycle(yielder(DIQ)) -> yielder(DIQ).
+-spec cycle(yielder(IXI)) -> yielder(IXI).
 cycle(Yielder) ->
     _pipe = repeat(Yielder),
     flatten(_pipe).
 
 -file("src/gleam/yielder.gleam", 709).
--spec find_loop(fun(() -> action(DIY)), fun((DIY) -> boolean())) -> {ok, DIY} |
+-spec find_loop(fun(() -> action(IXQ)), fun((IXQ) -> boolean())) -> {ok, IXQ} |
     {error, nil}.
 find_loop(Continuation, F) ->
     case Continuation() of
@@ -732,16 +732,16 @@ find_loop(Continuation, F) ->
     " // -> Error(Nil)\n"
     " ```\n"
 ).
--spec find(yielder(DIU), fun((DIU) -> boolean())) -> {ok, DIU} | {error, nil}.
+-spec find(yielder(IXM), fun((IXM) -> boolean())) -> {ok, IXM} | {error, nil}.
 find(Haystack, Is_desired) ->
     _pipe = erlang:element(2, Haystack),
     find_loop(_pipe, Is_desired).
 
 -file("src/gleam/yielder.gleam", 754).
 -spec find_map_loop(
-    fun(() -> action(DJK)),
-    fun((DJK) -> {ok, DJM} | {error, any()})
-) -> {ok, DJM} | {error, nil}.
+    fun(() -> action(IYC)),
+    fun((IYC) -> {ok, IYE} | {error, any()})
+) -> {ok, IYE} | {error, nil}.
 find_map_loop(Continuation, F) ->
     case Continuation() of
         stop ->
@@ -782,15 +782,15 @@ find_map_loop(Continuation, F) ->
     " // -> Error(Nil)\n"
     " ```\n"
 ).
--spec find_map(yielder(DJC), fun((DJC) -> {ok, DJE} | {error, any()})) -> {ok,
-        DJE} |
+-spec find_map(yielder(IXU), fun((IXU) -> {ok, IXW} | {error, any()})) -> {ok,
+        IXW} |
     {error, nil}.
 find_map(Haystack, Is_desired) ->
     _pipe = erlang:element(2, Haystack),
     find_map_loop(_pipe, Is_desired).
 
 -file("src/gleam/yielder.gleam", 783).
--spec index_loop(fun(() -> action(DJV)), integer()) -> fun(() -> action({DJV,
+-spec index_loop(fun(() -> action(IYN)), integer()) -> fun(() -> action({IYN,
     integer()})).
 index_loop(Continuation, Next) ->
     fun() -> case Continuation() of
@@ -812,7 +812,7 @@ index_loop(Continuation, Next) ->
     " // -> [#(\"a\", 0), #(\"b\", 1), #(\"c\", 2)]\n"
     " ```\n"
 ).
--spec index(yielder(DJS)) -> yielder({DJS, integer()}).
+-spec index(yielder(IYK)) -> yielder({IYK, integer()}).
 index(Yielder) ->
     _pipe = erlang:element(2, Yielder),
     _pipe@1 = index_loop(_pipe, 0),
@@ -829,12 +829,12 @@ index(Yielder) ->
     " // -> [1, 3, 9, 27, 81]\n"
     " ```\n"
 ).
--spec iterate(DJY, fun((DJY) -> DJY)) -> yielder(DJY).
+-spec iterate(IYQ, fun((IYQ) -> IYQ)) -> yielder(IYQ).
 iterate(Initial, F) ->
     unfold(Initial, fun(Element) -> {next, Element, F(Element)} end).
 
 -file("src/gleam/yielder.gleam", 832).
--spec take_while_loop(fun(() -> action(DKD)), fun((DKD) -> boolean())) -> fun(() -> action(DKD)).
+-spec take_while_loop(fun(() -> action(IYV)), fun((IYV) -> boolean())) -> fun(() -> action(IYV)).
 take_while_loop(Continuation, Predicate) ->
     fun() -> case Continuation() of
             stop ->
@@ -863,14 +863,14 @@ take_while_loop(Continuation, Predicate) ->
     " // -> [1, 2]\n"
     " ```\n"
 ).
--spec take_while(yielder(DKA), fun((DKA) -> boolean())) -> yielder(DKA).
+-spec take_while(yielder(IYS), fun((IYS) -> boolean())) -> yielder(IYS).
 take_while(Yielder, Predicate) ->
     _pipe = erlang:element(2, Yielder),
     _pipe@1 = take_while_loop(_pipe, Predicate),
     {yielder, _pipe@1}.
 
 -file("src/gleam/yielder.gleam", 868).
--spec drop_while_loop(fun(() -> action(DKJ)), fun((DKJ) -> boolean())) -> action(DKJ).
+-spec drop_while_loop(fun(() -> action(IZB)), fun((IZB) -> boolean())) -> action(IZB).
 drop_while_loop(Continuation, Predicate) ->
     case Continuation() of
         stop ->
@@ -900,13 +900,13 @@ drop_while_loop(Continuation, Predicate) ->
     " // -> [4, 2, 5]\n"
     " ```\n"
 ).
--spec drop_while(yielder(DKG), fun((DKG) -> boolean())) -> yielder(DKG).
+-spec drop_while(yielder(IYY), fun((IYY) -> boolean())) -> yielder(IYY).
 drop_while(Yielder, Predicate) ->
     _pipe = fun() -> drop_while_loop(erlang:element(2, Yielder), Predicate) end,
     {yielder, _pipe}.
 
 -file("src/gleam/yielder.gleam", 906).
--spec scan_loop(fun(() -> action(DKQ)), fun((DKS, DKQ) -> DKS), DKS) -> fun(() -> action(DKS)).
+-spec scan_loop(fun(() -> action(IZI)), fun((IZK, IZI) -> IZK), IZK) -> fun(() -> action(IZK)).
 scan_loop(Continuation, F, Accumulator) ->
     fun() -> case Continuation() of
             stop ->
@@ -933,15 +933,15 @@ scan_loop(Continuation, F, Accumulator) ->
     " // -> [1, 3, 6, 10, 15]\n"
     " ```\n"
 ).
--spec scan(yielder(DKM), DKO, fun((DKO, DKM) -> DKO)) -> yielder(DKO).
+-spec scan(yielder(IZE), IZG, fun((IZG, IZE) -> IZG)) -> yielder(IZG).
 scan(Yielder, Initial, F) ->
     _pipe = erlang:element(2, Yielder),
     _pipe@1 = scan_loop(_pipe, F, Initial),
     {yielder, _pipe@1}.
 
 -file("src/gleam/yielder.gleam", 939).
--spec zip_loop(fun(() -> action(DKZ)), fun(() -> action(DLB))) -> fun(() -> action({DKZ,
-    DLB})).
+-spec zip_loop(fun(() -> action(IZR)), fun(() -> action(IZT))) -> fun(() -> action({IZR,
+    IZT})).
 zip_loop(Left, Right) ->
     fun() -> case Left() of
             stop ->
@@ -973,13 +973,13 @@ zip_loop(Left, Right) ->
     " // -> [#(\"a\", 20), #(\"b\", 21), #(\"c\", 22)]\n"
     " ```\n"
 ).
--spec zip(yielder(DKU), yielder(DKW)) -> yielder({DKU, DKW}).
+-spec zip(yielder(IZM), yielder(IZO)) -> yielder({IZM, IZO}).
 zip(Left, Right) ->
     _pipe = zip_loop(erlang:element(2, Left), erlang:element(2, Right)),
     {yielder, _pipe}.
 
 -file("src/gleam/yielder.gleam", 1000).
--spec next_chunk(fun(() -> action(DLO)), fun((DLO) -> DLQ), DLQ, list(DLO)) -> chunk(DLO, DLQ).
+-spec next_chunk(fun(() -> action(JAG)), fun((JAG) -> JAI), JAI, list(JAG)) -> chunk(JAG, JAI).
 next_chunk(Continuation, F, Previous_key, Current_chunk) ->
     case Continuation() of
         stop ->
@@ -997,7 +997,7 @@ next_chunk(Continuation, F, Previous_key, Current_chunk) ->
     end.
 
 -file("src/gleam/yielder.gleam", 987).
--spec chunk_loop(fun(() -> action(DLJ)), fun((DLJ) -> DLL), DLL, DLJ) -> action(list(DLJ)).
+-spec chunk_loop(fun(() -> action(JAB)), fun((JAB) -> JAD), JAD, JAB) -> action(list(JAB)).
 chunk_loop(Continuation, F, Previous_key, Previous_element) ->
     case next_chunk(Continuation, F, Previous_key, [Previous_element]) of
         {last_by, Chunk} ->
@@ -1021,7 +1021,7 @@ chunk_loop(Continuation, F, Previous_key, Previous_element) ->
     " // -> [[1], [2, 2], [3], [4, 4, 6], [7, 7]]\n"
     " ```\n"
 ).
--spec chunk(yielder(DLE), fun((DLE) -> any())) -> yielder(list(DLE)).
+-spec chunk(yielder(IZW), fun((IZW) -> any())) -> yielder(list(IZW)).
 chunk(Yielder, F) ->
     _pipe = fun() -> case (erlang:element(2, Yielder))() of
             stop ->
@@ -1033,7 +1033,7 @@ chunk(Yielder, F) ->
     {yielder, _pipe}.
 
 -file("src/gleam/yielder.gleam", 1071).
--spec next_sized_chunk(fun(() -> action(DMC)), integer(), list(DMC)) -> sized_chunk(DMC).
+-spec next_sized_chunk(fun(() -> action(JAU)), integer(), list(JAU)) -> sized_chunk(JAU).
 next_sized_chunk(Continuation, Left, Current_chunk) ->
     case Continuation() of
         stop ->
@@ -1057,7 +1057,7 @@ next_sized_chunk(Continuation, Left, Current_chunk) ->
     end.
 
 -file("src/gleam/yielder.gleam", 1050).
--spec sized_chunk_loop(fun(() -> action(DLY)), integer()) -> fun(() -> action(list(DLY))).
+-spec sized_chunk_loop(fun(() -> action(JAQ)), integer()) -> fun(() -> action(list(JAQ))).
 sized_chunk_loop(Continuation, Count) ->
     fun() -> case next_sized_chunk(Continuation, Count, []) of
             no_more ->
@@ -1095,14 +1095,14 @@ sized_chunk_loop(Continuation, Count) ->
     " // -> [[1, 2, 3], [4, 5, 6], [7, 8]]\n"
     " ```\n"
 ).
--spec sized_chunk(yielder(DLU), integer()) -> yielder(list(DLU)).
+-spec sized_chunk(yielder(JAM), integer()) -> yielder(list(JAM)).
 sized_chunk(Yielder, Count) ->
     _pipe = erlang:element(2, Yielder),
     _pipe@1 = sized_chunk_loop(_pipe, Count),
     {yielder, _pipe@1}.
 
 -file("src/gleam/yielder.gleam", 1131).
--spec intersperse_loop(fun(() -> action(DMJ)), DMJ) -> action(DMJ).
+-spec intersperse_loop(fun(() -> action(JBB)), JBB) -> action(JBB).
 intersperse_loop(Continuation, Separator) ->
     case Continuation() of
         stop ->
@@ -1141,7 +1141,7 @@ intersperse_loop(Continuation, Separator) ->
     " // -> [1, 0, 2, 0, 3, 0, 4, 0, 5]\n"
     " ```\n"
 ).
--spec intersperse(yielder(DMG), DMG) -> yielder(DMG).
+-spec intersperse(yielder(JAY), JAY) -> yielder(JAY).
 intersperse(Yielder, Elem) ->
     _pipe = fun() -> case (erlang:element(2, Yielder))() of
             stop ->
@@ -1153,7 +1153,7 @@ intersperse(Yielder, Elem) ->
     {yielder, _pipe}.
 
 -file("src/gleam/yielder.gleam", 1179).
--spec any_loop(fun(() -> action(DMO)), fun((DMO) -> boolean())) -> boolean().
+-spec any_loop(fun(() -> action(JBG)), fun((JBG) -> boolean())) -> boolean().
 any_loop(Continuation, Predicate) ->
     case Continuation() of
         stop ->
@@ -1198,13 +1198,13 @@ any_loop(Continuation, Predicate) ->
     " // -> False\n"
     " ```\n"
 ).
--spec any(yielder(DMM), fun((DMM) -> boolean())) -> boolean().
+-spec any(yielder(JBE), fun((JBE) -> boolean())) -> boolean().
 any(Yielder, Predicate) ->
     _pipe = erlang:element(2, Yielder),
     any_loop(_pipe, Predicate).
 
 -file("src/gleam/yielder.gleam", 1228).
--spec all_loop(fun(() -> action(DMS)), fun((DMS) -> boolean())) -> boolean().
+-spec all_loop(fun(() -> action(JBK)), fun((JBK) -> boolean())) -> boolean().
 all_loop(Continuation, Predicate) ->
     case Continuation() of
         stop ->
@@ -1249,13 +1249,13 @@ all_loop(Continuation, Predicate) ->
     " // -> False\n"
     " ```\n"
 ).
--spec all(yielder(DMQ), fun((DMQ) -> boolean())) -> boolean().
+-spec all(yielder(JBI), fun((JBI) -> boolean())) -> boolean().
 all(Yielder, Predicate) ->
     _pipe = erlang:element(2, Yielder),
     all_loop(_pipe, Predicate).
 
 -file("src/gleam/yielder.gleam", 1273).
--spec update_group_with(DNI) -> fun((gleam@option:option(list(DNI))) -> list(DNI)).
+-spec update_group_with(JCA) -> fun((gleam@option:option(list(JCA))) -> list(JCA)).
 update_group_with(El) ->
     fun(Maybe_group) -> case Maybe_group of
             {some, Group} ->
@@ -1266,7 +1266,7 @@ update_group_with(El) ->
         end end.
 
 -file("src/gleam/yielder.gleam", 1264).
--spec group_updater(fun((DNA) -> DNB)) -> fun((gleam@dict:dict(DNB, list(DNA)), DNA) -> gleam@dict:dict(DNB, list(DNA))).
+-spec group_updater(fun((JBS) -> JBT)) -> fun((gleam@dict:dict(JBT, list(JBS)), JBS) -> gleam@dict:dict(JBT, list(JBS))).
 group_updater(F) ->
     fun(Groups, Elem) -> _pipe = Groups,
         gleam@dict:upsert(_pipe, F(Elem), update_group_with(Elem)) end.
@@ -1286,7 +1286,7 @@ group_updater(F) ->
     " // -> dict.from_list([#(0, [3, 6]), #(1, [1, 4]), #(2, [2, 5])])\n"
     " ```\n"
 ).
--spec group(yielder(DMU), fun((DMU) -> DMW)) -> gleam@dict:dict(DMW, list(DMU)).
+-spec group(yielder(JBM), fun((JBM) -> JBO)) -> gleam@dict:dict(JBO, list(JBM)).
 group(Yielder, Key) ->
     _pipe = Yielder,
     _pipe@1 = fold(_pipe, maps:new(), group_updater(Key)),
@@ -1315,7 +1315,7 @@ group(Yielder, Key) ->
     " // -> Ok(15)\n"
     " ```\n"
 ).
--spec reduce(yielder(DNM), fun((DNM, DNM) -> DNM)) -> {ok, DNM} | {error, nil}.
+-spec reduce(yielder(JCE), fun((JCE, JCE) -> JCE)) -> {ok, JCE} | {error, nil}.
 reduce(Yielder, F) ->
     case (erlang:element(2, Yielder))() of
         stop ->
@@ -1346,7 +1346,7 @@ reduce(Yielder, F) ->
     " // -> Ok(10)\n"
     " ```\n"
 ).
--spec last(yielder(DNQ)) -> {ok, DNQ} | {error, nil}.
+-spec last(yielder(JCI)) -> {ok, JCI} | {error, nil}.
 last(Yielder) ->
     _pipe = Yielder,
     reduce(_pipe, fun(_, Elem) -> Elem end).
@@ -1377,7 +1377,7 @@ empty() ->
     " // -> [1]\n"
     " ```\n"
 ).
--spec once(fun(() -> DNW)) -> yielder(DNW).
+-spec once(fun(() -> JCO)) -> yielder(JCO).
 once(F) ->
     _pipe = fun() -> {continue, F(), fun stop/0} end,
     {yielder, _pipe}.
@@ -1440,12 +1440,12 @@ range(Start, Stop) ->
     " // -> [1]\n"
     " ```\n"
 ).
--spec single(DNY) -> yielder(DNY).
+-spec single(JCQ) -> yielder(JCQ).
 single(Elem) ->
     once(fun() -> Elem end).
 
 -file("src/gleam/yielder.gleam", 1402).
--spec interleave_loop(fun(() -> action(DOE)), fun(() -> action(DOE))) -> action(DOE).
+-spec interleave_loop(fun(() -> action(JCW)), fun(() -> action(JCW))) -> action(JCW).
 interleave_loop(Current, Next) ->
     case Current() of
         stop ->
@@ -1476,7 +1476,7 @@ interleave_loop(Current, Next) ->
     " // -> [1, 100, 2, 3, 4]\n"
     " ```\n"
 ).
--spec interleave(yielder(DOA), yielder(DOA)) -> yielder(DOA).
+-spec interleave(yielder(JCS), yielder(JCS)) -> yielder(JCS).
 interleave(Left, Right) ->
     _pipe = fun() ->
         interleave_loop(erlang:element(2, Left), erlang:element(2, Right))
@@ -1485,10 +1485,10 @@ interleave(Left, Right) ->
 
 -file("src/gleam/yielder.gleam", 1446).
 -spec fold_until_loop(
-    fun(() -> action(DOM)),
-    fun((DOO, DOM) -> gleam@list:continue_or_stop(DOO)),
-    DOO
-) -> DOO.
+    fun(() -> action(JDE)),
+    fun((JDG, JDE) -> gleam@list:continue_or_stop(JDG)),
+    JDG
+) -> JDG.
 fold_until_loop(Continuation, F, Accumulator) ->
     case Continuation() of
         stop ->
@@ -1531,20 +1531,20 @@ fold_until_loop(Continuation, F, Accumulator) ->
     " ```\n"
 ).
 -spec fold_until(
-    yielder(DOI),
-    DOK,
-    fun((DOK, DOI) -> gleam@list:continue_or_stop(DOK))
-) -> DOK.
+    yielder(JDA),
+    JDC,
+    fun((JDC, JDA) -> gleam@list:continue_or_stop(JDC))
+) -> JDC.
 fold_until(Yielder, Initial, F) ->
     _pipe = erlang:element(2, Yielder),
     fold_until_loop(_pipe, F, Initial).
 
 -file("src/gleam/yielder.gleam", 1489).
 -spec try_fold_loop(
-    fun(() -> action(DOY)),
-    fun((DPA, DOY) -> {ok, DPA} | {error, DPB}),
-    DPA
-) -> {ok, DPA} | {error, DPB}.
+    fun(() -> action(JDQ)),
+    fun((JDS, JDQ) -> {ok, JDS} | {error, JDT}),
+    JDS
+) -> {ok, JDS} | {error, JDT}.
 try_fold_loop(Continuation, F, Accumulator) ->
     case Continuation() of
         stop ->
@@ -1581,9 +1581,9 @@ try_fold_loop(Continuation, F, Accumulator) ->
     " // -> Error(Nil)\n"
     " ```\n"
 ).
--spec try_fold(yielder(DOQ), DOS, fun((DOS, DOQ) -> {ok, DOS} | {error, DOT})) -> {ok,
-        DOS} |
-    {error, DOT}.
+-spec try_fold(yielder(JDI), JDK, fun((JDK, JDI) -> {ok, JDK} | {error, JDL})) -> {ok,
+        JDK} |
+    {error, JDL}.
 try_fold(Yielder, Initial, F) ->
     _pipe = erlang:element(2, Yielder),
     try_fold_loop(_pipe, F, Initial).
@@ -1605,7 +1605,7 @@ try_fold(Yielder, Initial, F) ->
     " // -> Error(Nil)\n"
     " ```\n"
 ).
--spec first(yielder(DPG)) -> {ok, DPG} | {error, nil}.
+-spec first(yielder(JDY)) -> {ok, JDY} | {error, nil}.
 first(Yielder) ->
     case (erlang:element(2, Yielder))() of
         stop ->
@@ -1640,7 +1640,7 @@ first(Yielder) ->
     " // -> Error(Nil)\n"
     " ```\n"
 ).
--spec at(yielder(DPK), integer()) -> {ok, DPK} | {error, nil}.
+-spec at(yielder(JEC), integer()) -> {ok, JEC} | {error, nil}.
 at(Yielder, Index) ->
     _pipe = Yielder,
     _pipe@1 = drop(_pipe, Index),
@@ -1700,7 +1700,7 @@ length(Yielder) ->
     " // Louis\n"
     " ```\n"
 ).
--spec each(yielder(DPS), fun((DPS) -> any())) -> nil.
+-spec each(yielder(JEK), fun((JEK) -> any())) -> nil.
 each(Yielder, F) ->
     _pipe = Yielder,
     _pipe@1 = map(_pipe, F),
@@ -1730,7 +1730,7 @@ each(Yielder, F) ->
     " // -> [1, 2, 3]\n"
     " ```\n"
 ).
--spec yield(DPV, fun(() -> yielder(DPV))) -> yielder(DPV).
+-spec yield(JEN, fun(() -> yielder(JEN))) -> yielder(JEN).
 yield(Element, Next) ->
     {yielder,
         fun() ->
@@ -1750,6 +1750,6 @@ yield(Element, Next) ->
     " // -> [0, 1, 2, 3]\n"
     " ```\n"
 ).
--spec prepend(yielder(DPY), DPY) -> yielder(DPY).
+-spec prepend(yielder(JEQ), JEQ) -> yielder(JEQ).
 prepend(Yielder, Element) ->
     yield(Element, fun() -> Yielder end).

@@ -76,8 +76,8 @@ log(Path, Measurements, _, _) ->
 -spec span(
     list(event()),
     gleam@dict:dict(binary(), gleam@dynamic:dynamic_()),
-    fun(() -> GIF)
-) -> GIF.
+    fun(() -> LZG)
+) -> LZG.
 span(Path, Metadata, Wrapping) ->
     telemetry:span(
         Path,

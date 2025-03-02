@@ -19,7 +19,7 @@
     {acceptor_crashed, gleam@dynamic:dynamic_()} |
     {system_error, glisten@socket:socket_reason()}.
 
--type message(FQS) :: {packet, bitstring()} | {user, FQS}.
+-type message(LHT) :: {packet, bitstring()} | {user, LHT}.
 
 -type ip_address() :: {ip_v4, integer(), integer(), integer(), integer()} |
     {ip_v6,
@@ -39,17 +39,17 @@
 
 -type connection_info() :: {connection_info, integer(), ip_address()}.
 
--type connection(FQT) :: {connection,
+-type connection(LHU) :: {connection,
         glisten@socket:socket(),
         glisten@transport:transport(),
-        gleam@erlang@process:subject(glisten@internal@handler:message(FQT))}.
+        gleam@erlang@process:subject(glisten@internal@handler:message(LHU))}.
 
--opaque handler(FQU, FQV) :: {handler,
+-opaque handler(LHV, LHW) :: {handler,
         glisten@socket@options:interface(),
-        fun((connection(FQU)) -> {FQV,
-            gleam@option:option(gleam@erlang@process:selector(FQU))}),
-        fun((message(FQU), FQV, connection(FQU)) -> gleam@otp@actor:next(message(FQU), FQV)),
-        gleam@option:option(fun((FQV) -> nil)),
+        fun((connection(LHV)) -> {LHW,
+            gleam@option:option(gleam@erlang@process:selector(LHV))}),
+        fun((message(LHV), LHW, connection(LHV)) -> gleam@otp@actor:next(message(LHV), LHW)),
+        gleam@option:option(fun((LHW) -> nil)),
         integer(),
         boolean(),
         boolean()}.
@@ -192,10 +192,10 @@ send(Conn, Msg) ->
 
 -file("src/glisten.gleam", 223).
 -spec convert_on_init(
-    fun((connection(FSJ)) -> {FSL,
-        gleam@option:option(gleam@erlang@process:selector(FSJ))})
-) -> fun((glisten@internal@handler:connection(FSJ)) -> {FSL,
-    gleam@option:option(gleam@erlang@process:selector(FSJ))}).
+    fun((connection(LJK)) -> {LJM,
+        gleam@option:option(gleam@erlang@process:selector(LJK))})
+) -> fun((glisten@internal@handler:connection(LJK)) -> {LJM,
+    gleam@option:option(gleam@erlang@process:selector(LJK))}).
 convert_on_init(On_init) ->
     fun(Conn) ->
         Connection = {connection,
@@ -212,15 +212,15 @@ convert_on_init(On_init) ->
     " processes.\n"
 ).
 -spec handler(
-    fun((connection(FSR)) -> {FST,
-        gleam@option:option(gleam@erlang@process:selector(FSR))}),
-    fun((message(FSR), FST, connection(FSR)) -> gleam@otp@actor:next(message(FSR), FST))
-) -> handler(FSR, FST).
+    fun((connection(LJS)) -> {LJU,
+        gleam@option:option(gleam@erlang@process:selector(LJS))}),
+    fun((message(LJS), LJU, connection(LJS)) -> gleam@otp@actor:next(message(LJS), LJU))
+) -> handler(LJS, LJU).
 handler(On_init, Loop) ->
     {handler, loopback, On_init, Loop, none, 10, false, false}.
 
 -file("src/glisten.gleam", 188).
--spec map_user_selector(gleam@erlang@process:selector(message(FRY))) -> gleam@erlang@process:selector(glisten@internal@handler:loop_message(FRY)).
+-spec map_user_selector(gleam@erlang@process:selector(message(LIZ))) -> gleam@erlang@process:selector(glisten@internal@handler:loop_message(LIZ)).
 map_user_selector(Selector) ->
     gleam_erlang_ffi:map_selector(Selector, fun(Value) -> case Value of
                 {packet, Msg} ->
@@ -232,8 +232,8 @@ map_user_selector(Selector) ->
 
 -file("src/glisten.gleam", 199).
 -spec convert_loop(
-    fun((message(FSD), FSE, connection(FSD)) -> gleam@otp@actor:next(message(FSD), FSE))
-) -> fun((glisten@internal@handler:loop_message(FSD), FSE, glisten@internal@handler:connection(FSD)) -> gleam@otp@actor:next(glisten@internal@handler:loop_message(FSD), FSE)).
+    fun((message(LJE), LJF, connection(LJE)) -> gleam@otp@actor:next(message(LJE), LJF))
+) -> fun((glisten@internal@handler:loop_message(LJE), LJF, glisten@internal@handler:connection(LJE)) -> gleam@otp@actor:next(glisten@internal@handler:loop_message(LJE), LJF)).
 convert_loop(Loop) ->
     fun(Msg, Data, Conn) ->
         Conn@1 = {connection,
@@ -270,7 +270,7 @@ convert_loop(Loop) ->
 
 -file("src/glisten.gleam", 259).
 ?DOC(" Adds a function to the handler to be called when the connection is closed.\n").
--spec with_close(handler(FTA, FTB), fun((FTB) -> nil)) -> handler(FTA, FTB).
+-spec with_close(handler(LKB, LKC), fun((LKC) -> nil)) -> handler(LKB, LKC).
 with_close(Handler, On_close) ->
     _record = Handler,
     {handler,
@@ -284,7 +284,7 @@ with_close(Handler, On_close) ->
 
 -file("src/glisten.gleam", 267).
 ?DOC(" Modify the size of the acceptor pool\n").
--spec with_pool_size(handler(FTG, FTH), integer()) -> handler(FTG, FTH).
+-spec with_pool_size(handler(LKH, LKI), integer()) -> handler(LKH, LKI).
 with_pool_size(Handler, Size) ->
     _record = Handler,
     {handler,
@@ -302,7 +302,7 @@ with_pool_size(Handler, Size) ->
     " exposed only for `mist` to provide this support.  For a TCP library, you\n"
     " definitely do not need it.\n"
 ).
--spec with_http2(handler(FTM, FTN)) -> handler(FTM, FTN).
+-spec with_http2(handler(LKN, LKO)) -> handler(LKN, LKO).
 with_http2(Handler) ->
     _record = Handler,
     {handler,
@@ -321,7 +321,7 @@ with_http2(Handler) ->
     " interface.  If it is not supported, your application will crash.  If you\n"
     " call this with an IPv6 interface specified, it will have no effect.\n"
 ).
--spec with_ipv6(handler(FTY, FTZ)) -> handler(FTY, FTZ).
+-spec with_ipv6(handler(LKZ, LLA)) -> handler(LKZ, LLA).
 with_ipv6(Handler) ->
     _record = Handler,
     {handler,
@@ -480,7 +480,7 @@ serve_ssl(Handler, Port, Certfile, Keyfile) ->
     " IPv6 addresses (i.e. \"::1\"). If an invalid value is provided, this will\n"
     " panic.\n"
 ).
--spec bind(handler(FTS, FTT), binary()) -> handler(FTS, FTT).
+-spec bind(handler(LKT, LKU), binary()) -> handler(LKT, LKU).
 bind(Handler, Interface) ->
     Address@1 = case {Interface,
         glisten_ffi:parse_address(unicode:characters_to_list(Interface))} of

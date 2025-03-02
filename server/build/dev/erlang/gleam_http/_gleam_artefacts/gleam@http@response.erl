@@ -12,7 +12,7 @@
 -define(DOC(Str), -compile([])).
 -endif.
 
--type response(BBC) :: {response, integer(), list({binary(), binary()}), BBC}.
+-type response(GPU) :: {response, integer(), list({binary(), binary()}), GPU}.
 
 -file("src/gleam/http/response.gleam", 40).
 ?DOC(
@@ -44,7 +44,7 @@ get_header(Response, Key) ->
     " Header keys are always lowercase in `gleam_http`. To use any uppercase\n"
     " letter is invalid.\n"
 ).
--spec set_header(response(BBR), binary(), binary()) -> response(BBR).
+-spec set_header(response(GQJ), binary(), binary()) -> response(GQJ).
 set_header(Response, Key, Value) ->
     Headers = gleam@list:key_set(
         erlang:element(3, Response),
@@ -64,7 +64,7 @@ set_header(Response, Key, Value) ->
     " Header keys are always lowercase in `gleam_http`. To use any uppercase\n"
     " letter is invalid.\n"
 ).
--spec prepend_header(response(BBU), binary(), binary()) -> response(BBU).
+-spec prepend_header(response(GQM), binary(), binary()) -> response(GQM).
 prepend_header(Response, Key, Value) ->
     Headers = [{string:lowercase(Key), Value} | erlang:element(3, Response)],
     _record = Response,
@@ -72,7 +72,7 @@ prepend_header(Response, Key, Value) ->
 
 -file("src/gleam/http/response.gleam", 87).
 ?DOC(" Set the body of the response, overwriting any existing body.\n").
--spec set_body(response(any()), BBZ) -> response(BBZ).
+-spec set_body(response(any()), GQR) -> response(GQR).
 set_body(Response, Body) ->
     {response, Status, Headers, _} = Response,
     {response, Status, Headers, Body}.
@@ -84,9 +84,9 @@ set_body(Response, Body) ->
     " If the given function returns an `Ok` value the body is set, if it returns\n"
     " an `Error` value then the error is returned.\n"
 ).
--spec try_map(response(BBD), fun((BBD) -> {ok, BBF} | {error, BBG})) -> {ok,
-        response(BBF)} |
-    {error, BBG}.
+-spec try_map(response(GPV), fun((GPV) -> {ok, GPX} | {error, GPY})) -> {ok,
+        response(GPX)} |
+    {error, GPY}.
 try_map(Response, Transform) ->
     gleam@result:then(
         Transform(erlang:element(4, Response)),
@@ -95,7 +95,7 @@ try_map(Response, Transform) ->
 
 -file("src/gleam/http/response.gleam", 97).
 ?DOC(" Update the body of a response using a given function.\n").
--spec map(response(BCB), fun((BCB) -> BCD)) -> response(BCD).
+-spec map(response(GQT), fun((GQT) -> GQV)) -> response(GQV).
 map(Response, Transform) ->
     _pipe = erlang:element(4, Response),
     _pipe@1 = Transform(_pipe),
@@ -138,11 +138,11 @@ get_cookies(Resp) ->
 -file("src/gleam/http/response.gleam", 135).
 ?DOC(" Set a cookie value for a client\n").
 -spec set_cookie(
-    response(BCI),
+    response(GRA),
     binary(),
     binary(),
     gleam@http@cookie:attributes()
-) -> response(BCI).
+) -> response(GRA).
 set_cookie(Response, Name, Value, Attributes) ->
     prepend_header(
         Response,
@@ -156,7 +156,7 @@ set_cookie(Response, Name, Value, Attributes) ->
     "\n"
     " Note: The attributes value should be the same as when the response cookie was set.\n"
 ).
--spec expire_cookie(response(BCL), binary(), gleam@http@cookie:attributes()) -> response(BCL).
+-spec expire_cookie(response(GRD), binary(), gleam@http@cookie:attributes()) -> response(GRD).
 expire_cookie(Response, Name, Attributes) ->
     Attrs = begin
         _record = Attributes,

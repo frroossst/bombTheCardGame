@@ -14,22 +14,22 @@
 
 ?MODULEDOC(false).
 
--type valid_message(IZK) :: {socket_message, bitstring()} |
+-type valid_message(OQL) :: {socket_message, bitstring()} |
     socket_closed_message |
-    {user_message, IZK}.
+    {user_message, OQL}.
 
--type websocket_message(IZL) :: {valid, valid_message(IZL)} | invalid.
+-type websocket_message(OQM) :: {valid, valid_message(OQM)} | invalid.
 
 -type websocket_connection() :: {websocket_connection,
         glisten@socket:socket(),
         glisten@transport:transport(),
         gleam@option:option(gramps@websocket@compression:context())}.
 
--type handler_message(IZM) :: {internal, gramps@websocket:frame()} | {user, IZM}.
+-type handler_message(OQN) :: {internal, gramps@websocket:frame()} | {user, OQN}.
 
--type websocket_state(IZN) :: {websocket_state,
+-type websocket_state(OQO) :: {websocket_state,
         bitstring(),
-        IZN,
+        OQO,
         gleam@option:option(gramps@websocket@compression:compression())}.
 
 -file("src/mist/internal/websocket.gleam", 56).
@@ -131,7 +131,7 @@ set_active(Transport, Socket) ->
 
 -file("src/mist/internal/websocket.gleam", 358).
 ?DOC(false).
--spec map_user_selector(gleam@option:option(gleam@erlang@process:selector(JAV))) -> gleam@option:option(gleam@erlang@process:selector(websocket_message(JAV))).
+-spec map_user_selector(gleam@option:option(gleam@erlang@process:selector(ORW))) -> gleam@option:option(gleam@erlang@process:selector(websocket_message(ORW))).
 map_user_selector(Selector) ->
     gleam@option:map(
         Selector,
@@ -147,11 +147,11 @@ map_user_selector(Selector) ->
 ?DOC(false).
 -spec apply_frames(
     list(gramps@websocket:frame()),
-    fun((JAL, websocket_connection(), handler_message(JAM)) -> gleam@otp@actor:next(JAM, JAL)),
+    fun((ORM, websocket_connection(), handler_message(ORN)) -> gleam@otp@actor:next(ORN, ORM)),
     websocket_connection(),
-    gleam@otp@actor:next(websocket_message(JAM), JAL),
-    fun((JAL) -> nil)
-) -> gleam@otp@actor:next(websocket_message(JAM), JAL).
+    gleam@otp@actor:next(websocket_message(ORN), ORM),
+    fun((ORM) -> nil)
+) -> gleam@otp@actor:next(websocket_message(ORN), ORM).
 apply_frames(Frames, Handler, Connection, Next, On_close) ->
     case {Frames, Next} of
         {_, {stop, Reason}} ->
@@ -246,14 +246,14 @@ apply_frames(Frames, Handler, Connection, Next, On_close) ->
 -file("src/mist/internal/websocket.gleam", 82).
 ?DOC(false).
 -spec initialize_connection(
-    fun((websocket_connection()) -> {IZW,
-        gleam@option:option(gleam@erlang@process:selector(IZX))}),
-    fun((IZW) -> nil),
-    fun((IZW, websocket_connection(), handler_message(IZX)) -> gleam@otp@actor:next(IZX, IZW)),
+    fun((websocket_connection()) -> {OQX,
+        gleam@option:option(gleam@erlang@process:selector(OQY))}),
+    fun((OQX) -> nil),
+    fun((OQX, websocket_connection(), handler_message(OQY)) -> gleam@otp@actor:next(OQY, OQX)),
     glisten@socket:socket(),
     glisten@transport:transport(),
     list(binary())
-) -> {ok, gleam@erlang@process:subject(websocket_message(IZX))} | {error, nil}.
+) -> {ok, gleam@erlang@process:subject(websocket_message(OQY))} | {error, nil}.
 initialize_connection(On_init, On_close, Handler, Socket, Transport, Extensions) ->
     _pipe@11 = gleam@otp@actor:start_spec(
         {spec,
