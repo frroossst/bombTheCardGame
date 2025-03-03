@@ -47,10 +47,15 @@ pub fn main() {
 
 fn say_hello() -> Response(ResponseData) {
   response.new(200)
-  |> response.set_body(mist.Bytes(bytes_tree.from_string("<h1>hello world</h1>")))
+  |> response.set_body(
+    mist.Bytes(bytes_tree.from_string("<h1>hello world</h1>")),
+  )
   |> response.set_header("content-type", "text/html")
 }
 
+pub type PlayerState {
+	PlayerState(id: String, deck: List(String))
+}
 
 pub type MyMessage {
   Broadcast(String)
