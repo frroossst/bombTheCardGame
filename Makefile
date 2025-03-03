@@ -1,4 +1,4 @@
-.PHONY: help
+.PHONY: help run client server all
 
 all: client server ## build client and server
 
