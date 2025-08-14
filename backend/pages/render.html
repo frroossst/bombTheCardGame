@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Game Visualizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0f4c3a, #1a6b54);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        .game-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        .river-container {
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+
+        .hand-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .card {
+            width: calc(80px * var(--card-scale, 1));
+            height: calc(112px * var(--card-scale, 1));
+            background: white;
+            border: 2px solid #333;
+            border-radius: calc(8px * var(--card-scale, 1));
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: calc(6px * var(--card-scale, 1));
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            z-index: 100;
+        }
+
+        .card-top {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .card-bottom {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            transform: rotate(180deg);
+        }
+
+        .card-rank {
+            font-size: calc(14px * var(--card-scale, 1));
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .card-suit {
+            font-size: calc(12px * var(--card-scale, 1));
+            line-height: 1;
+        }
+
+        .card-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: calc(24px * var(--card-scale, 1));
+        }
+
+        .red {
+            color: #d63031;
+        }
+
+        .black {
+            color: #2d3436;
+        }
+
+        /* Hand positioning with curve */
+        .hand-container .card {
+            margin: calc(-15px * var(--card-scale, 1));
+            transform-origin: bottom center;
+        }
+
+        .hand-container .card:nth-child(1) { transform: rotate(-15deg) translateY(calc(5px * var(--card-scale, 1))); }
+        .hand-container .card:nth-child(2) { transform: rotate(-7deg) translateY(0px); }
+        .hand-container .card:nth-child(3) { transform: rotate(0deg) translateY(calc(-3px * var(--card-scale, 1))); }
+        .hand-container .card:nth-child(4) { transform: rotate(7deg) translateY(0px); }
+        .hand-container .card:nth-child(5) { transform: rotate(15deg) translateY(calc(5px * var(--card-scale, 1))); }
+
+        .hand-container .card:hover {
+            transform: rotate(0deg) translateY(calc(-20px * var(--card-scale, 1))) scale(1.1);
+            margin: calc(10px * var(--card-scale, 1));
+            z-index: 100;
+        }
+
+        /* River card positioning */
+        .river-spread .card {
+            position: absolute;
+            animation: dealCard 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .river-pile .card {
+            position: absolute;
+            animation: dealCard 0.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        .river-pile .card:nth-child(n+2) {
+            transform: translate(-50%, -50%);
+        }
+        .river-pile .card:nth-child(n+3) {
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes dealCard {
+            0% {
+                opacity: 0;
+                transform: translateY(-100px) rotate(180deg) scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotate(var(--rotation, 0deg)) scale(1);
+            }
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            z-index: 1000; /* ensure controls are on top and clickable */
+        }
+
+        .controls button {
+            background: #00b894;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+        }
+
+        .controls button:hover {
+            background: #00a085;
+        }
+
+        .card-size-control {
+            margin: 10px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .card-size-control label {
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .card-size-control input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .card-size-control span {
+            font-size: 11px;
+            color: #ccc;
+        }
+
+        .info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            z-index: 1000; /* keep info above cards */
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <div>River Mode: <span id="riverMode">spread</span></div>
+        <div>Cards in Hand: <span id="handCount">0</span></div>
+        <div>Cards in River: <span id="riverCount">0</span></div>
+    </div>
+
+    <div class="controls">
+        <div class="card-size-control">
+            <label for="cardSizeSlider">Card Size</label>
+            <input type="range" id="cardSizeSlider" min="0.5" max="2" step="0.1" value="1">
+            <span id="cardSizeValue">100%</span>
+        </div>
+        <button id="toggleRiverBtn" type="button">Toggle River Mode</button>
+        <button id="shuffleRiverBtn" type="button">Shuffle River</button>
+        <button id="loadSampleBtn" type="button">Load Sample</button>
+    </div>
+
+    <div class="game-area">
+        <div class="river-container" id="riverContainer">
+            <!-- River cards will be added here -->
+        </div>
+    </div>
+
+    <div class="hand-container" id="handContainer">
+        <!-- Hand cards will be added here -->
+    </div>
+
+    <script>
+        let gameData = {
+            "river": [],
+            "in_hand": [],
+            "show_as": "spread"
+        };
+
+        let cardScale = 1;
+
+        const suits = {
+            'Hearts': { symbol: '♥', color: 'red' },
+            'Diamonds': { symbol: '♦', color: 'red' },
+            'Clubs': { symbol: '♣', color: 'black' },
+            'Spades': { symbol: '♠', color: 'black' }
+        };
+
+        const ranks = {
+            'Ace': 'A', 'King': 'K', 'Queen': 'Q', 'Jack': 'J',
+            '10': '10', '9': '9', '8': '8', '7': '7', '6': '6',
+            '5': '5', '4': '4', '3': '3', '2': '2'
+        };
+
+        function parseCard(cardString) {
+            const parts = cardString.split(' of ');
+            const rank = parts[0];
+            const suit = parts[1];
+            return { rank, suit };
+        }
+
+        function createCardElement(cardString) {
+            const { rank, suit } = parseCard(cardString);
+            const suitInfo = suits[suit];
+            
+            const card = document.createElement('div');
+            card.className = `card ${suitInfo.color}`;
+            
+            card.innerHTML = `
+                <div class="card-top">
+                    <div class="card-rank">${ranks[rank] || rank}</div>
+                    <div class="card-suit">${suitInfo.symbol}</div>
+                </div>
+                <div class="card-center">${suitInfo.symbol}</div>
+                <div class="card-bottom">
+                    <div class="card-rank">${ranks[rank] || rank}</div>
+                    <div class="card-suit">${suitInfo.symbol}</div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function updateCardSize(scale) {
+            cardScale = parseFloat(scale);
+            document.documentElement.style.setProperty('--card-scale', cardScale);
+            document.getElementById('cardSizeValue').textContent = Math.round(cardScale * 100) + '%';
+        }
+
+        function renderHand() {
+            const handContainer = document.getElementById('handContainer');
+            handContainer.innerHTML = '';
+            
+            gameData.in_hand.forEach((cardString, index) => {
+                const cardElement = createCardElement(cardString);
+                cardElement.style.animationDelay = `${index * 0.1}s`;
+                handContainer.appendChild(cardElement);
+            });
+            
+            document.getElementById('handCount').textContent = gameData.in_hand.length;
+        }
+
+        function renderRiver() {
+            const riverContainer = document.getElementById('riverContainer');
+            riverContainer.innerHTML = '';
+            
+            const className = gameData.show_as === 'pile' ? 'river-pile' : 'river-spread';
+            riverContainer.className = `river-container ${className}`;
+            
+            if (gameData.show_as === 'spread') {
+                // Calculate non-overlapping positions for spread
+                const cardWidth = 80 * cardScale;
+                const cardHeight = 112 * cardScale;
+                const positions = generateNonOverlappingPositions(gameData.river.length, cardWidth, cardHeight);
+                
+                gameData.river.forEach((cardString, index) => {
+                    const cardElement = createCardElement(cardString);
+                    cardElement.style.animationDelay = `${index * 0.2}s`;
+                    
+                    const position = positions[index];
+                    cardElement.style.setProperty('--rotation', `${position.rotation}deg`);
+                    cardElement.style.left = `${position.x}px`;
+                    cardElement.style.top = `${position.y}px`;
+                    cardElement.style.transform = `rotate(${position.rotation}deg)`;
+                    cardElement.style.position = 'absolute';
+                    
+                    riverContainer.appendChild(cardElement);
+                });
+            } else {
+                // Pile positioning - perfectly stacked
+                gameData.river.forEach((cardString, index) => {
+                    const cardElement = createCardElement(cardString);
+                    cardElement.style.animationDelay = `${index * 0.2}s`;
+                    
+                    cardElement.style.left = '50%';
+                    cardElement.style.top = '50%';
+                    cardElement.style.transform = 'translate(-50%, -50%)';
+                    cardElement.style.position = 'absolute';
+                    cardElement.style.zIndex = index;
+                    
+                    riverContainer.appendChild(cardElement);
+                });
+            }
+            
+            document.getElementById('riverCount').textContent = gameData.river.length;
+            document.getElementById('riverMode').textContent = gameData.show_as;
+        }
+
+        function generateNonOverlappingPositions(cardCount, cardWidth, cardHeight) {
+            const positions = [];
+            const containerWidth = window.innerWidth * 0.8; // 80% of screen width
+            const containerHeight = 300; // River area height
+            const margin = 20;
+            const maxAttempts = 100;
+            
+            for (let i = 0; i < cardCount; i++) {
+                let position;
+                let attempts = 0;
+                let validPosition = false;
+                
+                while (!validPosition && attempts < maxAttempts) {
+                    const rotation = (Math.random() - 0.5) * 60; // -30 to 30 degrees
+                    const x = Math.random() * (containerWidth - cardWidth - margin * 2) + margin + (window.innerWidth - containerWidth) / 2;
+                    const y = Math.random() * (containerHeight - cardHeight - margin * 2) + margin + 100; // 100px offset from top
+                    
+                    position = { x, y, rotation };
+                    
+                    // Check if this position overlaps with existing positions
+                    validPosition = true;
+                    for (const existingPos of positions) {
+                        if (isOverlapping(position, existingPos, cardWidth, cardHeight)) {
+                            validPosition = false;
+                            break;
+                        }
+                    }
+                    attempts++;
+                }
+                
+                // If we couldn't find a non-overlapping position, use a grid-based fallback
+                if (!validPosition) {
+                    const cols = Math.ceil(Math.sqrt(cardCount));
+                    const row = Math.floor(i / cols);
+                    const col = i % cols;
+                    const spacing = Math.max(cardWidth + 10, 100);
+                    
+                    position = {
+                        x: col * spacing + (window.innerWidth - cols * spacing) / 2,
+                        y: row * (cardHeight + 20) + 150,
+                        rotation: (Math.random() - 0.5) * 20
+                    };
+                }
+                
+                positions.push(position);
+            }
+            
+            return positions;
+        }
+
+        function isOverlapping(pos1, pos2, cardWidth, cardHeight) {
+            // Simple rectangular overlap check with rotation consideration
+            const buffer = 10; // Extra spacing buffer
+            const distance = Math.sqrt(Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2));
+            const minDistance = Math.max(cardWidth, cardHeight) + buffer;
+            
+            return distance < minDistance;
+        }
+
+        function renderCards() {
+            renderHand();
+            renderRiver();
+        }
+
+        function toggleRiverMode() {
+            gameData.show_as = gameData.show_as === 'spread' ? 'pile' : 'spread';
+            renderRiver();
+        }
+
+        function shuffleRiver() {
+            // Shuffle the river cards
+            for (let i = gameData.river.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [gameData.river[i], gameData.river[j]] = [gameData.river[j], gameData.river[i]];
+            }
+            renderRiver();
+        }
+
+        function loadSampleData() {
+            gameData = {
+                "river": ["Ace of Hearts", "10 of Spades", "King of Diamonds", "5 of Clubs"],
+                "in_hand": ["9 of Clubs", "7 of Diamonds", "Queen of Hearts", "Jack of Spades", "2 of Hearts"],
+                "show_as": "spread"
+            };
+            renderCards();
+        }
+
+        function loadGameData(data) {
+            gameData = data;
+            renderCards();
+        }
+
+        // Wire up controls after DOM is ready and initialize state
+        window.addEventListener('DOMContentLoaded', () => {
+            const sizeSlider = document.getElementById('cardSizeSlider');
+            if (sizeSlider) {
+                sizeSlider.addEventListener('input', (e) => updateCardSize(e.target.value));
+                sizeSlider.addEventListener('change', (e) => updateCardSize(e.target.value));
+            }
+
+            const toggleBtn = document.getElementById('toggleRiverBtn');
+            if (toggleBtn) toggleBtn.addEventListener('click', toggleRiverMode);
+
+            const shuffleBtn = document.getElementById('shuffleRiverBtn');
+            if (shuffleBtn) shuffleBtn.addEventListener('click', shuffleRiver);
+
+            const loadBtn = document.getElementById('loadSampleBtn');
+            if (loadBtn) loadBtn.addEventListener('click', loadSampleData);
+
+            // Initialize card size from slider and load sample data
+            updateCardSize(sizeSlider ? sizeSlider.value : 1);
+            loadSampleData();
+        });
+
+        // Example of how to load new data:
+        // loadGameData({
+        //     "river": ["Ace of Hearts", "10 of Spades"],
+        //     "in_hand": ["9 of Clubs", "7 of Diamonds", "Queen of Hearts"],
+        //     "show_as": "pile"
+        // });
+    </script>
+</body>
+</html>
